@@ -13,7 +13,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Sidebar -->
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">
@@ -60,9 +60,9 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <main class="main-content">
-      <!-- Topbar -->
+      <!-- Topbar Header -->
       <header class="topbar">
         <div class="page-header">
           <div class="eyebrow"><i data-lucide="shield-check"></i> PERSONAL TRADING SYSTEM</div>
@@ -76,7 +76,7 @@
         </div>
       </header>
 
-      <!-- Dashboard Page -->
+      <!-- Page 1: Dashboard -->
       <section id="dashboard" class="page active-page">
         <div class="hero-card">
           <div class="hero-info" style="width: 100%; max-width: 480px;">
@@ -96,8 +96,8 @@
               </script>
             </div>
 
-            <p class="muted-text">
-              <i data-lucide="info"></i> Kelola risiko dan pantau pergerakan pasar sebelum mengambil keputusan entry.
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">
+              <i data-lucide="info" style="width:14px; height:14px; vertical-align: middle;"></i> Kelola risiko dan pantau pergerakan pasar sebelum mengambil keputusan entry.
             </p>
           </div>
           <div class="hero-status">
@@ -107,7 +107,7 @@
           </div>
         </div>
 
-        <!-- Stats Grid -->
+        <!-- Dashboard Stats Grid -->
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-header">
@@ -139,10 +139,9 @@
           </div>
         </div>
 
-        <!-- Live Chart & Quick Tools -->
+        <!-- Live Chart & Quick Assistant -->
         <div class="grid-2">
-          <!-- TradingView Embedded Interactive Chart Widget -->
-          <div class="card" style="padding: 16px;">
+          <div class="card" style="padding: 18px;">
             <div class="card-title">
               <i data-lucide="candlestick-chart"></i>
               <h2>Live XAU/USD Chart</h2>
@@ -155,14 +154,13 @@
             </div>
           </div>
 
-          <!-- Quick Risk Assistant Panel -->
           <div class="card">
             <div class="card-title">
               <i data-lucide="zap"></i>
               <h2>Quick Risk Assistant</h2>
             </div>
             
-            <div class="form-group" style="margin-bottom: 16px;">
+            <div class="form-group" style="margin-bottom: 20px;">
               <label>Daily Market Bias</label>
               <select id="dashBias">
                 <option value="bullish">🟢 Bullish (Focus Buy)</option>
@@ -171,33 +169,33 @@
               </select>
             </div>
 
-            <div class="guide-steps" style="margin-top: 20px;">
-              <div class="step">
-                <div class="step-num">1</div>
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: var(--accent-gold-glow); color: var(--accent-gold); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">1</span>
                 <div><b>Riset Market</b> — Pantau arah trend dan level SnR penting di chart sebelah kiri.</div>
               </div>
-              <div class="step">
-                <div class="step-num">2</div>
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: var(--accent-gold-glow); color: var(--accent-gold); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">2</span>
                 <div><b>Kalkulasi Lot</b> — Buka menu <i>Calculator</i> untuk memastikan ukuran risiko tidak meleset.</div>
               </div>
-              <div class="step">
-                <div class="step-num">3</div>
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: var(--accent-gold-glow); color: var(--accent-gold); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">3</span>
                 <div><b>Disiplin Jurnal</b> — Catat setiap hasil transaksi di menu <i>Journal</i> untuk evaluasi.</div>
               </div>
             </div>
 
-            <div class="disclaimer-box" style="margin-top: 18px;">
-              <i data-lucide="shield-alert"></i>
+            <div style="margin-top: 24px; padding: 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; font-size: 12px; color: var(--text-muted); display: flex; gap: 10px;">
+              <i data-lucide="shield-alert" style="color: var(--accent-gold); flex-shrink: 0;"></i>
               <div>
-                <b>Aturan Emas Risk Management:</b>
-                <p style="margin-top: 4px;">Jangan pernah mempertaruhkan lebih dari <b>1% - 2% dari total modal</b> dalam satu kali transaksi.</p>
+                <b style="color: var(--accent-gold);">Aturan Emas Risk Management:</b>
+                <p style="margin-top: 2px;">Jangan pernah mempertaruhkan lebih dari <b>1% - 2% dari total modal</b> dalam satu kali transaksi.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Calculator Page -->
+      <!-- Page 2: Calculator -->
       <section id="calculator" class="page">
         <div class="grid-2">
           <div class="card">
@@ -242,7 +240,7 @@
                 </select>
               </div>
             </div>
-            <button class="btn-primary" id="calc" style="margin-top: 16px;">
+            <button class="btn-primary" id="calc" style="margin-top: 20px;">
               <i data-lucide="cpu"></i> Calculate Position Size
             </button>
             <div id="calcResult" class="result-box"></div>
@@ -253,8 +251,8 @@
               <i data-lucide="coins"></i>
               <h2>Cent Account Calculator</h2>
             </div>
-            <p class="muted-text">Masukkan saldo modal USD sebenarnya. 1 USD diset setara dengan 100 unit Cent.</p>
-            <div class="form-group" style="margin-top: 14px;">
+            <p style="color: var(--text-muted); font-size: 13px;">Masukkan saldo modal USD sebenarnya. 1 USD diset setara dengan 100 unit Cent.</p>
+            <div class="form-group" style="margin-top: 18px;">
               <label>Real Balance ($ USD)</label>
               <input id="centBalance" type="number" value="10" min="0" step="0.01">
             </div>
@@ -262,15 +260,15 @@
               <span class="label">DISPLAY BALANCE</span>
               <b id="centDisplay">1,000 cents</b>
             </div>
-            <div class="info-note">
-              <i data-lucide="info"></i>
+            <div style="font-size: 12px; color: var(--text-dim); display: flex; gap: 8px;">
+              <i data-lucide="info" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
               <span>Spesifikasi akun cent (min lot, contract size) tergantung broker. Pastikan memeriksa syarat dan ketentuan broker Anda.</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Journal Page -->
+      <!-- Page 3: Journal -->
       <section id="journal" class="page">
         <div class="card">
           <div class="card-title">
@@ -344,7 +342,7 @@
               </select>
             </div>
           </div>
-          <div class="form-group" style="margin-top: 14px;">
+          <div class="form-group" style="margin-top: 18px;">
             <label>Why did I enter?</label>
             <textarea id="jReason" placeholder="Tuliskan poin pertimbangan entry..."></textarea>
           </div>
@@ -352,12 +350,12 @@
             <label>What did I learn?</label>
             <textarea id="jLesson" placeholder="Catatan evaluasi transaksi..."></textarea>
           </div>
-          <button class="btn-primary" id="saveTrade" style="margin-top: 18px;">
+          <button class="btn-primary" id="saveTrade" style="margin-top: 20px;">
             <i data-lucide="save"></i> Save Trade Log
           </button>
         </div>
 
-        <div class="card" style="margin-top: 20px;">
+        <div class="card" style="margin-top: 24px;">
           <div class="card-title">
             <i data-lucide="list"></i>
             <h2>Trade History</h2>
@@ -382,7 +380,7 @@
         </div>
       </section>
 
-      <!-- Performance Page -->
+      <!-- Page 4: Performance -->
       <section id="performance" class="page">
         <div class="stats-grid">
           <div class="stat-card">
@@ -404,24 +402,22 @@
         </div>
 
         <div class="card">
-          <div class="card-header-flex">
-            <div class="card-title">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+            <div class="card-title" style="margin-bottom: 0;">
               <i data-lucide="calendar"></i>
               <h2>Performance by Period</h2>
             </div>
-            <div class="filters">
-              <select id="periodFilter">
-                <option value="all">All Time</option>
-                <option value="day">Today</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
-              </select>
-            </div>
+            <select id="periodFilter" style="width: auto; padding: 8px 14px;">
+              <option value="all">All Time</option>
+              <option value="day">Today</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+            </select>
           </div>
           <div id="periodSummary" class="result-box"></div>
         </div>
 
-        <div class="grid-2" style="margin-top: 20px;">
+        <div class="grid-2">
           <div class="card">
             <div class="card-title">
               <i data-lucide="pie-chart"></i>
@@ -439,7 +435,7 @@
         </div>
       </section>
 
-      <!-- Dictionary Page -->
+      <!-- Page 5: Dictionary -->
       <section id="dictionary" class="page">
         <div class="card">
           <div class="card-title">
@@ -454,48 +450,25 @@
         </div>
       </section>
 
-      <!-- News Page -->
+      <!-- Page 6: News -->
       <section id="news" class="page">
         <div class="card">
           <div class="card-title">
             <i data-lucide="bell"></i>
             <h2>Economic Calendar & News Warnings</h2>
           </div>
-          <p class="muted-text">Peringatan volatilitas makroekonomi untuk instrumen XAU/USD.</p>
+          <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Peringatan volatilitas makroekonomi untuk instrumen XAU/USD.</p>
           
           <div class="news-list">
-            <div class="news-item high">
-              <div class="news-tag">🔴 HIGH IMPACT</div>
-              <div class="news-content">
-                <h3>FOMC, CPI, NFP, Fed Interest Rate</h3>
-                <small>Volatilitas ekstrem. Disarankan menghindari open posisi baru 30 menit sebelum dan sesudah rilis berita.</small>
+            <div class="news-item">
+              <span style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 11px; width: max-content;">🔴 HIGH IMPACT</span>
+              <div>
+                <h3 style="font-size: 15px;">FOMC, CPI, NFP, Fed Interest Rate</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Volatilitas ekstrem. Disarankan menghindari open posisi baru 30 menit sebelum dan sesudah rilis berita.</p>
               </div>
             </div>
-            <div class="news-item medium">
-              <div class="news-tag">🟠 MEDIUM IMPACT</div>
-              <div class="news-content">
-                <h3>Fed Speeches, Retail Sales, Jobless Claims, PMI</h3>
-                <small>Dapat memicu spread melar dan pergerakan agresif secara mendadak.</small>
-              </div>
-            </div>
-            <div class="news-item low">
-              <div class="news-tag">🟢 CORE RULE</div>
-              <div class="news-content">
-                <h3>Jangan Entry Berdasarkan Berita</h3>
-                <small>Gunakan kalender berita sebagai kontrol filter risiko, bukan sebagai pemicu (trigger) entry eksekusi.</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script src="script.js"></script>
-  <script>
-    // Inisialisasi Ikon Lucide
-    lucide.createIcons();
-  </script>
-</body>
-        </html>
-        
+            <div class="news-item">
+              <span style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 11px; width: max-content;">🟠 MEDIUM IMPACT</span>
+              <div>
+                <h3 style="font-size: 15px;">Fed Speeches, Retail Sales, Jobless Claims, PMI</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Dapat memicu spread me
