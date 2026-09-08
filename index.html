@@ -79,12 +79,23 @@
       <!-- Dashboard Page -->
       <section id="dashboard" class="page active-page">
         <div class="hero-card">
-          <div class="hero-info">
-            <span class="tag">XAU/USD TERMINAL</span>
-            <div class="price-display">
-              <span class="currency">$</span>
-              <span id="dashPrice">3600.00</span>
+          <div class="hero-info" style="width: 100%; max-width: 480px;">
+            <span class="tag">XAU/USD LIVE PRICE</span>
+            
+            <!-- Live TradingView Single Quote Widget -->
+            <div class="tradingview-widget-container" style="margin: 12px 0;">
+              <div class="tradingview-widget-container__widget"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+              {
+                "symbol": "OANDA:XAUUSD",
+                "width": "100%",
+                "colorTheme": "dark",
+                "isTransparent": true,
+                "locale": "id"
+              }
+              </script>
             </div>
+
             <p class="muted-text">
               <i data-lucide="info"></i> Kelola risiko dan pantau pergerakan pasar sebelum mengambil keputusan entry.
             </p>
@@ -130,7 +141,7 @@
 
         <!-- Live Chart & Quick Tools -->
         <div class="grid-2">
-          <!-- TradingView Embedded Widget -->
+          <!-- TradingView Embedded Interactive Chart Widget -->
           <div class="card" style="padding: 16px;">
             <div class="card-title">
               <i data-lucide="candlestick-chart"></i>
@@ -205,15 +216,15 @@
               </div>
               <div class="form-group">
                 <label>Entry Price</label>
-                <input id="entry" type="number" value="3600" step="0.01">
+                <input id="entry" type="number" value="2600" step="0.01">
               </div>
               <div class="form-group">
                 <label>Stop Loss (SL)</label>
-                <input id="sl" type="number" value="3590" step="0.01">
+                <input id="sl" type="number" value="2590" step="0.01">
               </div>
               <div class="form-group">
                 <label>Take Profit (TP)</label>
-                <input id="tp" type="number" value="3620" step="0.01">
+                <input id="tp" type="number" value="2620" step="0.01">
               </div>
               <div class="form-group">
                 <label>Contract Size (oz/lot)</label>
@@ -486,5 +497,5 @@
     lucide.createIcons();
   </script>
 </body>
-  </html>
-  
+        </html>
+        
