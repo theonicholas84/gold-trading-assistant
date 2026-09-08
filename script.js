@@ -1,42 +1,300 @@
-const $=id=>document.getElementById(id);
-const key="goldTA_v1";
-let trades=JSON.parse(localStorage.getItem(key)||"[]");
+// State Management & Local Storage
+let trades = JSON.parse(localStorage.getItem('gold_trades')) || [];
 
-document.querySelectorAll(".nav").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.querySelectorAll(".page").forEach(p=>p.classList.remove("active-page"));$(btn.dataset.page).classList.add("active-page");$("pageTitle").textContent=btn.textContent.replace(/^[^A-Za-z]+/,"").trim(); if(btn.dataset.page==="performance")renderPerformance(); if(btn.dataset.page==="journal")renderJournal(); if(btn.dataset.page==="dictionary")renderDict();});
+// DOM Elements
+document.addEventListener('DOMContentLoaded', () => {
+  initNavigation();
+  initCalculator();
+  initJournal();
+  initPerformance();
+  initDictionary();
+  initDashboard();
 
-function save(){localStorage.setItem(key,JSON.stringify(trades));}
-function money(n){return "$"+Number(n||0).toFixed(2)}
-function calcMetrics(arr=trades){
- const wins=arr.filter(t=>+t.pnl>0), losses=arr.filter(t=>+t.pnl<0);
- const gp=wins.reduce((a,t)=>a+ +t.pnl,0), gl=Math.abs(losses.reduce((a,t)=>a+ +t.pnl,0));
- return {n:arr.length,w:wins.length,l:losses.length,wr:arr.length?wins.length/arr.length*100:0,pnl:gp-gl,pf:gl?gp/gl:0,avgw:wins.length?gp/wins.length:0,exec:arr.filter(t=>t.loss==="Execution Loss").length,strat:arr.filter(t=>t.loss==="Strategy Loss").length};
+  // Load awal data dashboard & performance
+  updateDashboardStats();
+  updatePerformanceStats();
+
+  // Reset Data Handler
+  document.getElementById('resetData')?.addEventListener('click', () => {
+    if (confirm('Yakin ingin menghapus seluruh data jurnal dan statistik?')) {
+      localStorage.removeItem('gold_trades');
+      trades = [];
+      updateDashboardStats();
+      updatePerformanceStats();
+      renderJournalTable();
+      alert('Data berhasil di-reset.');
+    }
+  });
+});
+
+// Navigation Logic
+function initNavigation() {
+  const navButtons = document.querySelectorAll('.nav');
+  const pages = document.querySelectorAll('.page');
+  const pageTitle = document.getElementById('pageTitle');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pageTarget = btn.getAttribute('data-page');
+
+      navButtons.forEach(b => b.classList.remove('active'));
+      pages.forEach(p => p.classList.remove('active-page'));
+
+      btn.classList.add('active');
+      document.getElementById(pageTarget)?.classList.add('active-page');
+
+      if (pageTitle) {
+        pageTitle.textContent = btn.querySelector('span').textContent;
+      }
+
+      // Refresh data jika pindah ke dashboard/performance
+      if (pageTarget === 'dashboard') updateDashboardStats();
+      if (pageTarget === 'performance') updatePerformanceStats();
+    });
+  });
 }
-function updateDash(){const m=calcMetrics();$("dTrades").textContent=m.n;$("dWin").textContent=m.wr.toFixed(1)+"%";$("dPnL").textContent=money(m.pnl);$("dExec").textContent=m.exec;}
-updateDash();
 
-$("validate").onclick=()=>{const checks=[...document.querySelectorAll("#dashboard .check input")];const n=checks.filter(x=>x.checked).length;const pct=n/checks.length*100;$("quality").innerHTML=`<b>${pct.toFixed(0)}% — ${pct>=75?"READY FOR REVIEW":"WAIT"}</b><br>${n}/${checks.length} checklist items complete. Checklist bukan jaminan trade profit.`};
+// Dashboard Update Logic
+function updateDashboardStats() {
+  const totalTradesEl = document.getElementById('dTrades');
+  const winRateEl = document.getElementById('dWin');
+  const pnlEl = document.getElementById('dPnL');
+  const execLossEl = document.getElementById('dExec');
 
-$("calc").onclick=()=>{
- const bal=+$("balance").value,risk=+$("riskPct").value/100,entry=+$("entry").value,sl=+$("sl").value,tp=+$("tp").value,cs=+$("contract").value,step=+$("lotStep").value;
- const dist=Math.abs(entry-sl), riskMoney=bal*risk, perLot=dist*cs;
- let raw=perLot?riskMoney/perLot:0; let lot=step?Math.floor(raw/step)*step:raw;
- const rr=dist?Math.abs(tp-entry)/dist:0, profit=perLot?lot*cs*Math.abs(tp-entry):0;
- $("calcResult").innerHTML=`Maximum loss: <b>${money(riskMoney)}</b><br>SL distance: <b>${dist.toFixed(2)}</b><br>Estimated lot: <b>${lot.toFixed(2)}</b><br>R:R: <b>1:${rr.toFixed(2)}</b><br>Potential gross profit: <b>${money(profit)}</b><br><small class="muted">Formula assumes XAU/USD P/L = price move × contract size × lots. Verify your broker's specification.</small>`;
-};
-$("centBalance").oninput=()=>{$("centDisplay").textContent=(+$("centBalance").value*100).toLocaleString("en-US")+" cents"};
+  const total = trades.length;
+  const wins = trades.filter(t => Number(t.pnl) > 0).length;
+  const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : '0.0';
+  const netPnL = trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
+  const execLosses = trades.filter(t => t.lossType === 'Execution Loss').length;
 
-$("jDate").value=new Date().toISOString().slice(0,10);
-$("saveTrade").onclick=()=>{
- const t={id:Date.now(),date:$("jDate").value,dir:$("jDir").value,entry:+$("jEntry").value,sl:+$("jSL").value,tp:+$("jTP").value,exit:+$("jExit").value,lot:+$("jLot").value,pnl:+$("jPnL").value,strategy:$("jStrategy").value||"Unspecified",session:$("jSession").value,emotion:$("jEmotion").value,loss:$("jLoss").value,reason:$("jReason").value,lesson:$("jLesson").value};
- if(!t.date||!Number.isFinite(t.pnl)){alert("Isi minimal Date dan P/L.");return} trades.push(t);save();renderJournal();updateDash();alert("Trade tersimpan di browser.");
-};
-function renderJournal(){$("tradeBody").innerHTML=trades.slice().reverse().map(t=>`<tr><td>${t.date}</td><td>${t.dir}</td><td>${t.entry}</td><td>${t.exit}</td><td>${money(t.pnl)}</td><td>${t.strategy}</td><td>${t.loss}</td><td><button class="delete" onclick="delTrade(${t.id})">Hapus</button></td></tr>`).join("")||`<tr><td colspan="8" class="muted">Belum ada trade.</td></tr>`}
-window.delTrade=id=>{trades=trades.filter(t=>t.id!==id);save();renderJournal();updateDash();renderPerformance()};
-function filtered(period){const now=new Date();return trades.filter(t=>{const d=new Date(t.date+"T12:00:00");if(period==="day")return d.toDateString()===now.toDateString();if(period==="month")return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();if(period==="year")return d.getFullYear()===now.getFullYear();return true})}
-function renderPerformance(){const m=calcMetrics();$("pnl").textContent=money(m.pnl);$("winrate").textContent=m.wr.toFixed(1)+"%";$("pf").textContent=m.pf.toFixed(2);$("avgwin").textContent=money(m.avgw);const f=filtered($("periodFilter").value),fm=calcMetrics(f);$("periodSummary").innerHTML=`Trades: <b>${fm.n}</b> • Wins: <b>${fm.w}</b> • Losses: <b>${fm.l}</b> • Win rate: <b>${fm.wr.toFixed(1)}%</b> • Net P/L: <b>${money(fm.pnl)}</b>`;$("lossBreakdown").innerHTML=`Strategy Loss: <b>${m.strat}</b><br>Execution Loss: <b>${m.exec}</b>`;const sessions={};trades.forEach(t=>sessions[t.session]=(sessions[t.session]||0)+ +t.pnl);$("tradingData").innerHTML=Object.entries(sessions).map(([k,v])=>`${k}: <b>${money(v)}</b>`).join("<br>")||"Belum ada data."}
-$("periodFilter").onchange=renderPerformance;
+  if (totalTradesEl) totalTradesEl.textContent = total;
+  if (winRateEl) winRateEl.textContent = `${winRate}%`;
+  if (pnlEl) {
+    pnlEl.textContent = `${netPnL >= 0 ? '+' : ''}$${netPnL.toFixed(2)}`;
+    pnlEl.style.color = netPnL >= 0 ? '#10b981' : '#ef4444';
+  }
+  if (execLossEl) execLossEl.textContent = execLosses;
+}
 
-const dict=[["BOS","Break of Structure — harga menembus struktur swing penting."],["CHoCH","Change of Character — perubahan karakter/struktur market."],["FVG","Fair Value Gap — area ketidakseimbangan harga yang sering dipantau trader."],["Spread","Selisih antara Bid dan Ask."],["Leverage","Fasilitas yang memperbesar eksposur; juga memperbesar risiko."],["Margin","Dana yang diperlukan untuk mempertahankan posisi."],["Lot","Ukuran posisi trading."],["R:R","Perbandingan potensi risiko terhadap potensi reward."],["Drawdown","Penurunan equity/balance dari puncak sebelumnya."],["Equity","Nilai akun termasuk floating P/L."],["Balance","Saldo akun setelah transaksi yang sudah terealisasi."]];
-function renderDict(){const q=$("dictSearch").value.toLowerCase();$("dictList").innerHTML=dict.filter(x=>x[0].toLowerCase().includes(q)||x[1].toLowerCase().includes(q)).map(x=>`<div class="term"><b>${x[0]}</b><p>${x[1]}</p></div>`).join("")}
-$("dictSearch").oninput=renderDict;renderDict();renderJournal();renderPerformance();
-$("resetData").onclick=()=>{if(confirm("Hapus semua journal?")){trades=[];save();renderJournal();renderPerformance();updateDash()}};
+// Calculator Logic
+function initCalculator() {
+  const calcBtn = document.getElementById('calc');
+  const centInput = document.getElementById('centBalance');
+
+  if (calcBtn) {
+    calcBtn.addEventListener('click', () => {
+      const balance = parseFloat(document.getElementById('balance').value) || 0;
+      const riskPct = parseFloat(document.getElementById('riskPct').value) || 0;
+      const entry = parseFloat(document.getElementById('entry').value) || 0;
+      const sl = parseFloat(document.getElementById('sl').value) || 0;
+      const tp = parseFloat(document.getElementById('tp').value) || 0;
+      const contract = parseFloat(document.getElementById('contract').value) || 100;
+      const lotStep = parseFloat(document.getElementById('lotStep').value) || 0.01;
+
+      const riskAmount = (balance * riskPct) / 100;
+      const slPips = Math.abs(entry - sl);
+      const tpPips = Math.abs(tp - entry);
+
+      if (slPips === 0) {
+        alert('Stop Loss (SL) tidak boleh sama dengan Entry Price.');
+        return;
+      }
+
+      // Calculation Formula
+      let lotSize = riskAmount / (slPips * contract);
+      lotSize = Math.floor(lotSize / lotStep) * lotStep; // Adjust to Lot Step
+
+      const rewardAmount = lotSize * tpPips * contract;
+      const rrRatio = (tpPips / slPips).toFixed(2);
+
+      const resultBox = document.getElementById('calcResult');
+      resultBox.innerHTML = `
+        <b>Hasil Kalkulasi:</b><br>
+        • Risiko Modal ($): <b>$${riskAmount.toFixed(2)}</b><br>
+        • Ukuran Lot Ide: <b style="color: #f59e0b; font-size: 16px;">${lotSize.toFixed(2)} Lot</b><br>
+        • Target Profit ($): <b>+$${rewardAmount.toFixed(2)}</b><br>
+        • Risk to Reward Ratio (RR): <b>1 : ${rrRatio}</b>
+      `;
+    });
+  }
+
+  if (centInput) {
+    centInput.addEventListener('input', (e) => {
+      const usdVal = parseFloat(e.target.value) || 0;
+      const cents = usdVal * 100;
+      document.getElementById('centDisplay').textContent = `${cents.toLocaleString('en-US')} cents`;
+    });
+  }
+}
+
+// Journal Logic
+function initJournal() {
+  const saveBtn = document.getElementById('saveTrade');
+  renderJournalTable();
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      const trade = {
+        id: Date.now(),
+        date: document.getElementById('jDate').value || new Date().toISOString().split('T')[0],
+        dir: document.getElementById('jDir').value,
+        entry: parseFloat(document.getElementById('jEntry').value) || 0,
+        sl: parseFloat(document.getElementById('jSL').value) || 0,
+        tp: parseFloat(document.getElementById('jTP').value) || 0,
+        exit: parseFloat(document.getElementById('jExit').value) || 0,
+        lot: parseFloat(document.getElementById('jLot').value) || 0,
+        pnl: parseFloat(document.getElementById('jPnL').value) || 0,
+        strategy: document.getElementById('jStrategy').value || '-',
+        session: document.getElementById('jSession').value,
+        emotion: document.getElementById('jEmotion').value,
+        lossType: document.getElementById('jLoss').value,
+        reason: document.getElementById('jReason').value || '-',
+        lesson: document.getElementById('jLesson').value || '-'
+      };
+
+      trades.unshift(trade);
+      localStorage.setItem('gold_trades', JSON.stringify(trades));
+
+      renderJournalTable();
+      updateDashboardStats();
+      updatePerformanceStats();
+
+      alert('Transaksi berhasil disimpan!');
+    });
+  }
+}
+
+function renderJournalTable() {
+  const tbody = document.getElementById('tradeBody');
+  if (!tbody) return;
+
+  if (trades.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Belum ada riwayat transaksi.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = trades.map(t => `
+    <tr>
+      <td>${t.date}</td>
+      <td style="color: ${t.dir === 'BUY' ? '#10b981' : '#ef4444'}; font-weight:700;">${t.dir}</td>
+      <td>${t.entry.toFixed(2)}</td>
+      <td>${t.exit.toFixed(2)}</td>
+      <td style="color: ${t.pnl >= 0 ? '#10b981' : '#ef4444'}; font-weight:700;">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</td>
+      <td>${t.strategy}</td>
+      <td>${t.lossType}</td>
+      <td style="text-align: right;">
+        <button class="delete" onclick="deleteTrade(${t.id})"><i data-lucide="trash-2"></i></button>
+      </td>
+    </tr>
+  `).join('');
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function deleteTrade(id) {
+  if (confirm('Hapus log transaksi ini?')) {
+    trades = trades.filter(t => t.id !== id);
+    localStorage.setItem('gold_trades', JSON.stringify(trades));
+    renderJournalTable();
+    updateDashboardStats();
+    updatePerformanceStats();
+  }
+}
+
+// Performance Logic
+function initPerformance() {
+  document.getElementById('periodFilter')?.addEventListener('change', updatePerformanceStats);
+}
+
+function updatePerformanceStats() {
+  const pnlEl = document.getElementById('pnl');
+  const winrateEl = document.getElementById('winrate');
+  const pfEl = document.getElementById('pf');
+  const avgwinEl = document.getElementById('avgwin');
+
+  const filter = document.getElementById('periodFilter')?.value || 'all';
+  let filtered = [...trades];
+
+  const now = new Date();
+  if (filter === 'day') {
+    const today = now.toISOString().split('T')[0];
+    filtered = trades.filter(t => t.date === today);
+  } else if (filter === 'month') {
+    const month = now.toISOString().slice(0, 7);
+    filtered = trades.filter(t => t.date?.startsWith(month));
+  } else if (filter === 'year') {
+    const year = now.getFullYear().toString();
+    filtered = trades.filter(t => t.date?.startsWith(year));
+  }
+
+  const total = filtered.length;
+  const wins = filtered.filter(t => Number(t.pnl) > 0);
+  const losses = filtered.filter(t => Number(t.pnl) < 0);
+
+  const netPnL = filtered.reduce((s, t) => s + Number(t.pnl || 0), 0);
+  const totalWinAmount = wins.reduce((s, t) => s + Number(t.pnl), 0);
+  const totalLossAmount = Math.abs(losses.reduce((s, t) => s + Number(t.pnl), 0));
+
+  const winRate = total > 0 ? ((wins.length / total) * 100).toFixed(1) : '0.0';
+  const profitFactor = totalLossAmount > 0 ? (totalWinAmount / totalLossAmount).toFixed(2) : (totalWinAmount > 0 ? 'MAX' : '0.00');
+  const avgWin = wins.length > 0 ? (totalWinAmount / wins.length).toFixed(2) : '0.00';
+
+  if (pnlEl) {
+    pnlEl.textContent = `$${netPnL.toFixed(2)}`;
+    pnlEl.style.color = netPnL >= 0 ? '#10b981' : '#ef4444';
+  }
+  if (winrateEl) winrateEl.textContent = `${winRate}%`;
+  if (pfEl) pfEl.textContent = profitFactor;
+  if (avgwinEl) avgwinEl.textContent = `$${avgWin}`;
+
+  // Breakdown Loss
+  const lossBreakdownEl = document.getElementById('lossBreakdown');
+  if (lossBreakdownEl) {
+    const stratLoss = filtered.filter(t => t.lossType === 'Strategy Loss').length;
+    const execLoss = filtered.filter(t => t.lossType === 'Execution Loss').length;
+    lossBreakdownEl.innerHTML = `
+      • Strategy Loss: <b>${stratLoss}</b><br>
+      • Execution Loss (Disiplin/Mental): <b>${execLoss}</b>
+    `;
+  }
+}
+
+// Dictionary Logic
+function initDictionary() {
+  const terms = [
+    { name: 'BOS (Break of Structure)', desc: 'Kondisi ketika harga menembus level High/Low sebelumnya, menandakan kelanjutan trend.' },
+    { name: 'CHoCH (Change of Character)', desc: 'Tanda-tanda awal perubahan arah trend saat struktur harga patah.' },
+    { name: 'Spread', desc: 'Selisih antara harga Ask (beli) dan Bid (jual) yang menjadi biaya untuk broker.' },
+    { name: 'Lot', desc: 'Satuan ukuran volume transaksi dalam pasar forex/gold.' },
+    { name: 'Cent Account', desc: 'Akun trading yang menggunakan satuan Cent (1 USD = 100 Cent) untuk mengecilkan nominal risiko.' }
+  ];
+
+  const searchInput = document.getElementById('dictSearch');
+  const dictList = document.getElementById('dictList');
+
+  function renderDict(filterText = '') {
+    if (!dictList) return;
+    const filtered = terms.filter(t => t.name.toLowerCase().includes(filterText.toLowerCase()) || t.desc.toLowerCase().includes(filterText.toLowerCase()));
+    dictList.innerHTML = filtered.map(t => `
+      <div class="term">
+        <b>${t.name}</b>
+        <p>${t.desc}</p>
+      </div>
+    `).join('');
+  }
+
+  renderDict();
+  searchInput?.addEventListener('input', (e) => renderDict(e.target.value));
+}
+
+function initDashboard() {
+  // Sync Daily Bias
+  document.getElementById('dashBias')?.addEventListener('change', (e) => {
+    localStorage.setItem('gold_bias', e.target.value);
+  });
+
+  const savedBias = localStorage.getItem('gold_bias');
+  if (savedBias && document.getElementById('dashBias')) {
+    document.getElementById('dashBias').value = savedBias;
+  }
+                                  }
