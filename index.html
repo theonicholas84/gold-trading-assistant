@@ -1,161 +1,483 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Gold Trading Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Trading Assistant • XAU/USD</title>
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="brand">🥇 <span>Gold TA</span></div>
-    <button class="nav active" data-page="dashboard">🏠 Dashboard</button>
-    <button class="nav" data-page="calculator">🧮 Calculator</button>
-    <button class="nav" data-page="journal">📒 Journal</button>
-    <button class="nav" data-page="performance">📊 Performance</button>
-    <button class="nav" data-page="dictionary">📚 Dictionary</button>
-    <button class="nav" data-page="news">📰 News Warning</button>
-    <div class="sidebar-note">V1 • Data tersimpan di browser</div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow">XAU/USD • PERSONAL TRADING ASSISTANT</div>
-        <h1 id="pageTitle">Dashboard</h1>
-      </div>
-      <button class="ghost" id="resetData">Reset Data</button>
-    </header>
-
-    <section id="dashboard" class="page active-page">
-      <div class="hero card">
-        <div>
-          <div class="muted">XAU/USD reference price</div>
-          <div class="price">$ <span id="dashPrice">3600.00</span></div>
-          <p class="muted">V1 tidak mengambil harga live. Masukkan harga terbaru di Calculator/Journal.</p>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="coins"></i>
         </div>
-        <div class="badge">🟡 WAIT • Plan first</div>
-      </div>
-      <div class="grid four">
-        <div class="stat card"><span>Trades</span><b id="dTrades">0</b></div>
-        <div class="stat card"><span>Win Rate</span><b id="dWin">0%</b></div>
-        <div class="stat card"><span>Net P/L</span><b id="dPnL">$0.00</b></div>
-        <div class="stat card"><span>Execution Loss</span><b id="dExec">0</b></div>
-      </div>
-      <div class="grid two">
-        <div class="card">
-          <h2>Entry Checklist</h2>
-          <label class="check"><input type="checkbox"> Trend sesuai</label>
-          <label class="check"><input type="checkbox"> Struktur market jelas</label>
-          <label class="check"><input type="checkbox"> Ada level penting</label>
-          <label class="check"><input type="checkbox"> Ada confirmation</label>
-          <label class="check"><input type="checkbox"> Risk sesuai plan</label>
-          <label class="check"><input type="checkbox"> R:R memenuhi aturan</label>
-          <label class="check"><input type="checkbox"> Tidak ada high-impact news</label>
-          <label class="check"><input type="checkbox"> Bukan FOMO</label>
-          <button class="primary" id="validate">Validate Trade</button>
-          <div id="quality" class="result">Belum divalidasi.</div>
-        </div>
-        <div class="card">
-          <h2>Quick Guide</h2>
-          <p>Gunakan alur: <b>Calculate → Plan → Trade → Journal → Review</b>.</p>
-          <p>Website ini tidak menjamin profit dan tidak memberi rekomendasi finansial. Tujuannya membantu disiplin, pencatatan, dan risk management.</p>
+        <div class="brand-text">
+          <span class="title">GOLD TA</span>
+          <span class="subtitle">XAU/USD Terminal</span>
         </div>
       </div>
-    </section>
 
-    <section id="calculator" class="page">
-      <div class="grid two">
-        <div class="card">
-          <h2>Risk & Lot Calculator</h2>
-          <div class="grid two">
-            <label>Balance ($)<input id="balance" type="number" value="500" min="0"></label>
-            <label>Risk (%)<input id="riskPct" type="number" value="1" min="0" step="0.1"></label>
-            <label>Entry<input id="entry" type="number" value="3600" step="0.01"></label>
-            <label>Stop Loss<input id="sl" type="number" value="3590" step="0.01"></label>
-            <label>Take Profit<input id="tp" type="number" value="3620" step="0.01"></label>
-            <label>Contract size (oz/lot)<input id="contract" type="number" value="100" min="0.01"></label>
-            <label>Lot step<input id="lotStep" type="number" value="0.01" min="0.0001" step="0.01"></label>
-            <label>Account type
-              <select id="acctType"><option value="standard">Standard</option><option value="cent">Cent</option></select>
-            </label>
+      <nav class="nav-menu">
+        <button class="nav active" data-page="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav" data-page="calculator">
+          <i data-lucide="calculator"></i>
+          <span>Calculator</span>
+        </button>
+        <button class="nav" data-page="journal">
+          <i data-lucide="book-open"></i>
+          <span>Journal</span>
+        </button>
+        <button class="nav" data-page="performance">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Performance</span>
+        </button>
+        <button class="nav" data-page="dictionary">
+          <i data-lucide="book-marked"></i>
+          <span>Dictionary</span>
+        </button>
+        <button class="nav" data-page="news">
+          <i data-lucide="newspaper"></i>
+          <span>News Warning</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-indicator">
+          <span class="dot"></span> Local Storage Active
+        </div>
+        <div class="version">Version 1.0 Pro</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="page-header">
+          <div class="eyebrow"><i data-lucide="shield-check"></i> PERSONAL TRADING SYSTEM</div>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-ghost" id="resetData">
+            <i data-lucide="rotate-ccw"></i>
+            <span>Reset Data</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Page -->
+      <section id="dashboard" class="page active-page">
+        <div class="hero-card">
+          <div class="hero-info">
+            <span class="tag">XAU/USD REFERENCE PRICE</span>
+            <div class="price-display">
+              <span class="currency">$</span>
+              <span id="dashPrice">3600.00</span>
+            </div>
+            <p class="muted-text">
+              <i data-lucide="info"></i> Harga referensi statis V1. Masukkan data riil pada kalkulator atau jurnal.
+            </p>
           </div>
-          <button class="primary" id="calc">Calculate</button>
-          <div id="calcResult" class="result"></div>
+          <div class="hero-status">
+            <div class="badge badge-warning">
+              <i data-lucide="clock"></i> WAIT • Plan First
+            </div>
+          </div>
         </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Total Trades</span>
+              <i data-lucide="history"></i>
+            </div>
+            <b id="dTrades">0</b>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Win Rate</span>
+              <i data-lucide="percent"></i>
+            </div>
+            <b id="dWin">0%</b>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Net P/L</span>
+              <i data-lucide="dollar-sign"></i>
+            </div>
+            <b id="dPnL">$0.00</b>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <span>Execution Loss</span>
+              <i data-lucide="alert-triangle"></i>
+            </div>
+            <b id="dExec">0</b>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="check-square"></i>
+              <h2>Pre-Trade Checklist</h2>
+            </div>
+            <div class="checklist">
+              <label class="check-item"><input type="checkbox"><span>Trend sesuai dengan timeframe besar</span></label>
+              <label class="check-item"><input type="checkbox"><span>Struktur market (BOS/CHOCH) jelas</span></label>
+              <label class="check-item"><input type="checkbox"><span>Harga berada di level SnR / Supply-Demand penting</span></label>
+              <label class="check-item"><input type="checkbox"><span>Ada konfirmasi candlestick / rejection</span></label>
+              <label class="check-item"><input type="checkbox"><span>Ukuran risiko (Risk %) sesuai plan</span></label>
+              <label class="check-item"><input type="checkbox"><span>Risk to Reward (R:R) rasio memenuhi kriteria</span></label>
+              <label class="check-item"><input type="checkbox"><span>Tidak ada berita high-impact dalam rentang dekat</span></label>
+              <label class="check-item"><input type="checkbox"><span>Eksekusi tenang, murni analisa (Bukan FOMO)</span></label>
+            </div>
+            <button class="btn-primary" id="validate">
+              <i data-lucide="shield-check"></i> Validate Trade Setup
+            </button>
+            <div id="quality" class="result-box">Belum divalidasi. Silakan periksa item checklist di atas.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="compass"></i>
+              <h2>Quick Execution Guide</h2>
+            </div>
+            <div class="guide-steps">
+              <div class="step">
+                <div class="step-num">1</div>
+                <div><b>Calculate</b> — Tentukan lot berdasarkan batas toleransi risiko.</div>
+              </div>
+              <div class="step">
+                <div class="step-num">2</div>
+                <div><b>Plan</b> — Validasi setup dengan Pre-Trade Checklist.</div>
+              </div>
+              <div class="step">
+                <div class="step-num">3</div>
+                <div><b>Execute</b> — Eksekusi posisi dengan disiplin tanpa emosi.</div>
+              </div>
+              <div class="step">
+                <div class="step-num">4</div>
+                <div><b>Journal</b> — Catat hasil trading dan emosi saat bertransaksi.</div>
+              </div>
+            </div>
+            <div class="disclaimer-box">
+              <i data-lucide="alert-circle"></i>
+              <p>Platform ini dirancang khusus untuk meningkatkan disiplin dan pengelolaan risiko. Tidak memberikan rekomendasi atau nasihat keuangan.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calculator Page -->
+      <section id="calculator" class="page">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="calculator"></i>
+              <h2>Risk & Lot Size Calculator</h2>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Balance ($)</label>
+                <input id="balance" type="number" value="500" min="0">
+              </div>
+              <div class="form-group">
+                <label>Risk (%)</label>
+                <input id="riskPct" type="number" value="1" min="0" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>Entry Price</label>
+                <input id="entry" type="number" value="3600" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Stop Loss (SL)</label>
+                <input id="sl" type="number" value="3590" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Take Profit (TP)</label>
+                <input id="tp" type="number" value="3620" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Contract Size (oz/lot)</label>
+                <input id="contract" type="number" value="100" min="0.01">
+              </div>
+              <div class="form-group">
+                <label>Lot Step</label>
+                <input id="lotStep" type="number" value="0.01" min="0.0001" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Account Type</label>
+                <select id="acctType">
+                  <option value="standard">Standard Account</option>
+                  <option value="cent">Cent Account</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-primary" id="calc">
+              <i data-lucide="cpu"></i> Calculate Position Size
+            </button>
+            <div id="calcResult" class="result-box"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="coins"></i>
+              <h2>Cent Account Calculator</h2>
+            </div>
+            <p class="muted-text">Masukkan saldo modal USD sebenarnya. 1 USD diset setara dengan 100 unit Cent.</p>
+            <div class="form-group">
+              <label>Real Balance ($ USD)</label>
+              <input id="centBalance" type="number" value="10" min="0" step="0.01">
+            </div>
+            <div class="cent-display-box">
+              <span class="label">DISPLAY BALANCE</span>
+              <b id="centDisplay">1,000 cents</b>
+            </div>
+            <div class="info-note">
+              <i data-lucide="info"></i>
+              <span>Spesifikasi akun cent (min lot, contract size) tergantung broker. Pastikan memeriksa syarat dan ketentuan spesifikasi instrumen Anda.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Journal Page -->
+      <section id="journal" class="page">
         <div class="card">
-          <h2>Cent Account</h2>
-          <p>Masukkan saldo USD sebenarnya. Untuk tampilan cent, 1 USD = 100 cent units.</p>
-          <label>Real balance ($)<input id="centBalance" type="number" value="10" min="0" step="0.01"></label>
-          <div class="centbox"><b id="centDisplay">1,000 cents</b><span>display balance</span></div>
-          <p class="muted">Contract size, minimum lot, dan lot step tetap mengikuti broker. Jangan menganggap semua akun cent memiliki spesifikasi yang sama.</p>
+          <div class="card-title">
+            <i data-lucide="plus-circle"></i>
+            <h2>Add Trade Log</h2>
+          </div>
+          <div class="form-grid grid-3">
+            <div class="form-group">
+              <label>Date</label>
+              <input id="jDate" type="date">
+            </div>
+            <div class="form-group">
+              <label>Direction</label>
+              <select id="jDir">
+                <option value="BUY">BUY</option>
+                <option value="SELL">SELL</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Entry Price</label>
+              <input id="jEntry" type="number" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>Stop Loss (SL)</label>
+              <input id="jSL" type="number" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>Take Profit (TP)</label>
+              <input id="jTP" type="number" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>Exit Price</label>
+              <input id="jExit" type="number" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>Lot Size</label>
+              <input id="jLot" type="number" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>P/L ($)</label>
+              <input id="jPnL" type="number" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>Strategy</label>
+              <input id="jStrategy" placeholder="e.g. Break & Retest">
+            </div>
+            <div class="form-group">
+              <label>Session</label>
+              <select id="jSession">
+                <option>Asian</option>
+                <option>London</option>
+                <option>New York</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Emotion</label>
+              <select id="jEmotion">
+                <option>Calm</option>
+                <option>Confident</option>
+                <option>FOMO</option>
+                <option>Fear</option>
+                <option>Revenge</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Loss Type</label>
+              <select id="jLoss">
+                <option>None</option>
+                <option>Strategy Loss</option>
+                <option>Execution Loss</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 14px;">
+            <label>Why did I enter?</label>
+            <textarea id="jReason" placeholder="Tuliskan poin pertimbangan entry..."></textarea>
+          </div>
+          <div class="form-group" style="margin-top: 14px;">
+            <label>What did I learn?</label>
+            <textarea id="jLesson" placeholder="Catatan evaluasi transaksi..."></textarea>
+          </div>
+          <button class="btn-primary" id="saveTrade" style="margin-top: 18px;">
+            <i data-lucide="save"></i> Save Trade Log
+          </button>
         </div>
-      </div>
-    </section>
 
-    <section id="journal" class="page">
-      <div class="card">
-        <h2>Add Trade</h2>
-        <div class="grid three">
-          <label>Date<input id="jDate" type="date"></label>
-          <label>Direction<select id="jDir"><option>BUY</option><option>SELL</option></select></label>
-          <label>Entry<input id="jEntry" type="number" step="0.01"></label>
-          <label>SL<input id="jSL" type="number" step="0.01"></label>
-          <label>TP<input id="jTP" type="number" step="0.01"></label>
-          <label>Exit<input id="jExit" type="number" step="0.01"></label>
-          <label>Lot<input id="jLot" type="number" step="0.01"></label>
-          <label>P/L ($)<input id="jPnL" type="number" step="0.01"></label>
-          <label>Strategy<input id="jStrategy" placeholder="Break & Retest"></label>
-          <label>Session<select id="jSession"><option>Asian</option><option>London</option><option>New York</option></select></label>
-          <label>Emotion<select id="jEmotion"><option>Calm</option><option>Confident</option><option>FOMO</option><option>Fear</option><option>Revenge</option></select></label>
-          <label>Loss type<select id="jLoss"><option>None</option><option>Strategy Loss</option><option>Execution Loss</option></select></label>
+        <div class="card" style="margin-top: 20px;">
+          <div class="card-title">
+            <i data-lucide="list"></i>
+            <h2>Trade History</h2>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Dir</th>
+                  <th>Entry</th>
+                  <th>Exit</th>
+                  <th>P/L</th>
+                  <th>Strategy</th>
+                  <th>Loss Type</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="tradeBody"></tbody>
+            </table>
+          </div>
         </div>
-        <label>Why did I enter?<textarea id="jReason"></textarea></label>
-        <label>What did I learn?<textarea id="jLesson"></textarea></label>
-        <button class="primary" id="saveTrade">Save Trade</button>
-      </div>
-      <div class="card">
-        <h2>Trade History</h2>
-        <div class="tablewrap"><table><thead><tr><th>Date</th><th>Dir</th><th>Entry</th><th>Exit</th><th>P/L</th><th>Strategy</th><th>Loss Type</th><th></th></tr></thead><tbody id="tradeBody"></tbody></table></div>
-      </div>
-    </section>
+      </section>
 
-    <section id="performance" class="page">
-      <div class="grid four">
-        <div class="stat card"><span>Net P/L</span><b id="pnl">0</b></div>
-        <div class="stat card"><span>Win Rate</span><b id="winrate">0%</b></div>
-        <div class="stat card"><span>Profit Factor</span><b id="pf">0</b></div>
-        <div class="stat card"><span>Avg Win</span><b id="avgwin">$0</b></div>
-      </div>
-      <div class="card">
-        <h2>Performance by Period</h2>
-        <div class="filters"><select id="periodFilter"><option value="all">All</option><option value="day">Today</option><option value="month">This Month</option><option value="year">This Year</option></select></div>
-        <div id="periodSummary" class="result"></div>
-      </div>
-      <div class="grid two">
-        <div class="card"><h2>Loss Breakdown</h2><div id="lossBreakdown"></div></div>
-        <div class="card"><h2>Trading Data</h2><div id="tradingData"></div></div>
-      </div>
-    </section>
+      <!-- Performance Page -->
+      <section id="performance" class="page">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header"><span>Net P/L</span><i data-lucide="trending-up"></i></div>
+            <b id="pnl">$0.00</b>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Win Rate</span><i data-lucide="pie-chart"></i></div>
+            <b id="winrate">0%</b>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Profit Factor</span><i data-lucide="scale"></i></div>
+            <b id="pf">0</b>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Avg Win</span><i data-lucide="award"></i></div>
+            <b id="avgwin">$0</b>
+          </div>
+        </div>
 
-    <section id="dictionary" class="page">
-      <div class="card">
-        <h2>Trading Dictionary</h2>
-        <input id="dictSearch" placeholder="Cari: BOS, spread, leverage...">
-        <div id="dictList" class="dict"></div>
-      </div>
-    </section>
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <i data-lucide="calendar"></i>
+              <h2>Performance by Period</h2>
+            </div>
+            <div class="filters">
+              <select id="periodFilter">
+                <option value="all">All Time</option>
+                <option value="day">Today</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+              </select>
+            </div>
+          </div>
+          <div id="periodSummary" class="result-box"></div>
+        </div>
 
-    <section id="news" class="page">
-      <div class="card">
-        <h2>News Warning</h2>
-        <p class="muted">V1 memakai daftar manual. Nanti bisa disambungkan ke economic-calendar API.</p>
-        <div class="news"><div class="newsitem high"><b>🔴 HIGH IMPACT</b><span>FOMC / CPI / NFP</span><small>Periksa kalender resmi sebelum trading.</small></div>
-        <div class="newsitem medium"><b>🟠 MEDIUM IMPACT</b><span>Fed speech / PMI / Jobless Claims</span><small>Volatilitas bisa meningkat.</small></div>
-        <div class="newsitem"><b>🟢 RULE</b><span>Jangan entry hanya karena berita.</span><small>Gunakan news sebagai filter risiko, bukan sinyal otomatis.</small></div></div>
-      </div>
-    </section>
-  </main>
-<script src="script.js"></script>
+        <div class="grid-2" style="margin-top: 20px;">
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="pie-chart"></i>
+              <h2>Loss Breakdown</h2>
+            </div>
+            <div id="lossBreakdown"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="database"></i>
+              <h2>Trading Data Summary</h2>
+            </div>
+            <div id="tradingData"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dictionary Page -->
+      <section id="dictionary" class="page">
+        <div class="card">
+          <div class="card-title">
+            <i data-lucide="search"></i>
+            <h2>Trading Glossary & Terms</h2>
+          </div>
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input id="dictSearch" placeholder="Cari istilah: BOS, Spread, Leverage, Liquidity...">
+          </div>
+          <div id="dictList" class="dict-grid"></div>
+        </div>
+      </section>
+
+      <!-- News Page -->
+      <section id="news" class="page">
+        <div class="card">
+          <div class="card-title">
+            <i data-lucide="bell"></i>
+            <h2>Economic Calendar & News Warnings</h2>
+          </div>
+          <p class="muted-text">Peringatan volatilitas makroekonomi untuk instrumen XAU/USD.</p>
+          
+          <div class="news-list">
+            <div class="news-item high">
+              <div class="news-tag">🔴 HIGH IMPACT</div>
+              <div class="news-content">
+                <h3>FOMC, CPI, NFP, Fed Interest Rate</h3>
+                <small>Volatilitas ekstrem. Disarankan menghindari open posisi baru 30 menit sebelum dan sesudah rilis berita.</small>
+              </div>
+            </div>
+            <div class="news-item medium">
+              <div class="news-tag">🟠 MEDIUM IMPACT</div>
+              <div class="news-content">
+                <h3>Fed Speeches, Retail Sales, Jobless Claims, PMI</h3>
+                <small>Dapat memicu spread melar dan pergerakan agresif secara mendadak.</small>
+              </div>
+            </div>
+            <div class="news-item low">
+              <div class="news-tag">🟢 CORE RULE</div>
+              <div class="news-content">
+                <h3>Jangan Entry Berdasarkan Berita</h3>
+                <small>Gunakan kalender berita sebagai kontrol filter risiko, bukan sebagai pemicu (trigger) entry eksekusi.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+  </script>
 </body>
 </html>
