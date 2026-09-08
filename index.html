@@ -80,13 +80,13 @@
       <section id="dashboard" class="page active-page">
         <div class="hero-card">
           <div class="hero-info">
-            <span class="tag">XAU/USD REFERENCE PRICE</span>
+            <span class="tag">XAU/USD TERMINAL</span>
             <div class="price-display">
               <span class="currency">$</span>
               <span id="dashPrice">3600.00</span>
             </div>
             <p class="muted-text">
-              <i data-lucide="info"></i> Harga referensi statis V1. Masukkan data riil pada kalkulator atau jurnal.
+              <i data-lucide="info"></i> Kelola risiko dan pantau pergerakan pasar sebelum mengambil keputusan entry.
             </p>
           </div>
           <div class="hero-status">
@@ -96,6 +96,7 @@
           </div>
         </div>
 
+        <!-- Stats Grid -->
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-header">
@@ -127,54 +128,59 @@
           </div>
         </div>
 
+        <!-- Live Chart & Quick Tools -->
         <div class="grid-2">
-          <div class="card">
+          <!-- TradingView Embedded Widget -->
+          <div class="card" style="padding: 16px;">
             <div class="card-title">
-              <i data-lucide="check-square"></i>
-              <h2>Pre-Trade Checklist</h2>
+              <i data-lucide="candlestick-chart"></i>
+              <h2>Live XAU/USD Chart</h2>
             </div>
-            <div class="checklist">
-              <label class="check-item"><input type="checkbox"><span>Trend sesuai dengan timeframe besar</span></label>
-              <label class="check-item"><input type="checkbox"><span>Struktur market (BOS/CHOCH) jelas</span></label>
-              <label class="check-item"><input type="checkbox"><span>Harga berada di level SnR / Supply-Demand penting</span></label>
-              <label class="check-item"><input type="checkbox"><span>Ada konfirmasi candlestick / rejection</span></label>
-              <label class="check-item"><input type="checkbox"><span>Ukuran risiko (Risk %) sesuai plan</span></label>
-              <label class="check-item"><input type="checkbox"><span>Risk to Reward (R:R) rasio memenuhi kriteria</span></label>
-              <label class="check-item"><input type="checkbox"><span>Tidak ada berita high-impact dalam rentang dekat</span></label>
-              <label class="check-item"><input type="checkbox"><span>Eksekusi tenang, murni analisa (Bukan FOMO)</span></label>
+            <div class="tradingview-widget-container" style="height:400px; width:100%;">
+              <iframe
+                src="https://s.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=15&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Asia%2FJakarta"
+                style="width: 100%; height: 100%; border: 0; border-radius: 8px;">
+              </iframe>
             </div>
-            <button class="btn-primary" id="validate">
-              <i data-lucide="shield-check"></i> Validate Trade Setup
-            </button>
-            <div id="quality" class="result-box">Belum divalidasi. Silakan periksa item checklist di atas.</div>
           </div>
 
+          <!-- Quick Risk Assistant Panel -->
           <div class="card">
             <div class="card-title">
-              <i data-lucide="compass"></i>
-              <h2>Quick Execution Guide</h2>
+              <i data-lucide="zap"></i>
+              <h2>Quick Risk Assistant</h2>
             </div>
-            <div class="guide-steps">
+            
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Daily Market Bias</label>
+              <select id="dashBias">
+                <option value="bullish">🟢 Bullish (Focus Buy)</option>
+                <option value="bearish">🔴 Bearish (Focus Sell)</option>
+                <option value="range">🟡 Ranging / Sideways</option>
+              </select>
+            </div>
+
+            <div class="guide-steps" style="margin-top: 20px;">
               <div class="step">
                 <div class="step-num">1</div>
-                <div><b>Calculate</b> — Tentukan lot berdasarkan batas toleransi risiko.</div>
+                <div><b>Riset Market</b> — Pantau arah trend dan level SnR penting di chart sebelah kiri.</div>
               </div>
               <div class="step">
                 <div class="step-num">2</div>
-                <div><b>Plan</b> — Validasi setup dengan Pre-Trade Checklist.</div>
+                <div><b>Kalkulasi Lot</b> — Buka menu <i>Calculator</i> untuk memastikan ukuran risiko tidak meleset.</div>
               </div>
               <div class="step">
                 <div class="step-num">3</div>
-                <div><b>Execute</b> — Eksekusi posisi dengan disiplin tanpa emosi.</div>
-              </div>
-              <div class="step">
-                <div class="step-num">4</div>
-                <div><b>Journal</b> — Catat hasil trading dan emosi saat bertransaksi.</div>
+                <div><b>Disiplin Jurnal</b> — Catat setiap hasil transaksi di menu <i>Journal</i> untuk evaluasi.</div>
               </div>
             </div>
-            <div class="disclaimer-box">
-              <i data-lucide="alert-circle"></i>
-              <p>Platform ini dirancang khusus untuk meningkatkan disiplin dan pengelolaan risiko. Tidak memberikan rekomendasi atau nasihat keuangan.</p>
+
+            <div class="disclaimer-box" style="margin-top: 18px;">
+              <i data-lucide="shield-alert"></i>
+              <div>
+                <b>Aturan Emas Risk Management:</b>
+                <p style="margin-top: 4px;">Jangan pernah mempertaruhkan lebih dari <b>1% - 2% dari total modal</b> dalam satu kali transaksi.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -225,7 +231,7 @@
                 </select>
               </div>
             </div>
-            <button class="btn-primary" id="calc">
+            <button class="btn-primary" id="calc" style="margin-top: 16px;">
               <i data-lucide="cpu"></i> Calculate Position Size
             </button>
             <div id="calcResult" class="result-box"></div>
@@ -237,7 +243,7 @@
               <h2>Cent Account Calculator</h2>
             </div>
             <p class="muted-text">Masukkan saldo modal USD sebenarnya. 1 USD diset setara dengan 100 unit Cent.</p>
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 14px;">
               <label>Real Balance ($ USD)</label>
               <input id="centBalance" type="number" value="10" min="0" step="0.01">
             </div>
@@ -247,7 +253,7 @@
             </div>
             <div class="info-note">
               <i data-lucide="info"></i>
-              <span>Spesifikasi akun cent (min lot, contract size) tergantung broker. Pastikan memeriksa syarat dan ketentuan spesifikasi instrumen Anda.</span>
+              <span>Spesifikasi akun cent (min lot, contract size) tergantung broker. Pastikan memeriksa syarat dan ketentuan broker Anda.</span>
             </div>
           </div>
         </div>
@@ -476,8 +482,9 @@
 
   <script src="script.js"></script>
   <script>
-    // Initialize Lucide Icons
+    // Inisialisasi Ikon Lucide
     lucide.createIcons();
   </script>
 </body>
-</html>
+  </html>
+  
