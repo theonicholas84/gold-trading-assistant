@@ -1,4 +1,4 @@
-// 1. Live TradingView Chart (Light Theme)
+// 1. Live TradingView Chart
 new TradingView.widget({
     "width": "100%",
     "height": "100%",
@@ -13,6 +13,38 @@ new TradingView.widget({
     "allow_symbol_change": true,
     "container_id": "tradingview_gold"
 });
+
+// 2. Load Economic Calendar Widget dynamically (100% Fix for Empty Box)
+function loadEconomicCalendar() {
+    const wrapper = document.getElementById('calendar-wrapper');
+    if (!wrapper) return;
+
+    wrapper.innerHTML = ''; // Clear container
+
+    const containerDiv = document.createElement('div');
+    containerDiv.className = 'tradingview-widget-container';
+    
+    const widgetDiv = document.createElement('div');
+    widgetDiv.className = 'tradingview-widget-container__widget';
+    containerDiv.appendChild(widgetDiv);
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-events.js';
+    script.async = true;
+    script.text = JSON.stringify({
+        "colorTheme": "light",
+        "isTransparent": false,
+        "width": "100%",
+        "height": "100%",
+        "locale": "id",
+        "importanceFilter": "-1,0,1",
+        "currencyFilter": "USD"
+    });
+
+    containerDiv.appendChild(script);
+    wrapper.appendChild(containerDiv);
+}
 
 // Global State
 let trades = JSON.parse(localStorage.getItem('gold_trades_v3')) || [];
@@ -79,7 +111,7 @@ function calculateRisk() {
 });
 calculateRisk();
 
-// Equity Curve Graph (Soft Warm Theme)
+// Equity Curve Graph
 function initChart() {
     const ctx = document.getElementById('equityChart').getContext('2d');
     equityChart = new Chart(ctx, {
@@ -166,7 +198,7 @@ function renderJournal() {
             <td class="p-3 font-medium">${trade.lot}</td>
             <td class="p-3 ${pnlClass}">${pnlNum >= 0 ? '+' : ''}$${pnlNum.toFixed(2)}</td>
             <td class="p-3 text-center">
-                <button onclick="deleteTrade(${index})" class="text-slate-400 hover:text-rose-600 font-semibold transition">Hapus</button>
+                <button type="button" onclick="deleteTrade(${index})" class="text-slate-400 hover:text-rose-600 font-semibold transition">Hapus</button>
             </td>
         `;
         journalTableBody.appendChild(row);
@@ -261,5 +293,7 @@ document.getElementById('file-import').addEventListener('change', (e) => {
     }
 });
 
+// Init App
 initChart();
 renderJournal();
+loadEconomicCalendar();
