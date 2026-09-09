@@ -8,25 +8,11 @@ new TradingView.widget({
     "theme": "light",
     "style": "1",
     "locale": "id",
-    "toolbar_bg": "#f1f3f6",
+    "toolbar_bg": "#f8fafc",
     "enable_publishing": false,
     "allow_symbol_change": true,
     "container_id": "tradingview_gold"
 });
-
-// 2. Init Economic Calendar Widget (Light Theme)
-const eventsWidgetContainer = document.getElementById('tradingview_events');
-if (eventsWidgetContainer) {
-    eventsWidgetContainer.innerHTML = JSON.stringify({
-        "colorTheme": "light",
-        "isTransparent": false,
-        "width": "100%",
-        "height": "100%",
-        "locale": "id",
-        "importanceFilter": "0,1",
-        "currencyFilter": "USD"
-    });
-}
 
 // Global State
 let trades = JSON.parse(localStorage.getItem('gold_trades_v3')) || [];
@@ -55,16 +41,16 @@ document.getElementById('trade-date').valueAsDate = new Date();
 // Toggle Akun Standard / Cent
 btnAccStd.addEventListener('click', () => {
     isCentAccount = false;
-    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-white shadow-sm";
-    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded text-gray-500";
+    btnAccStd.className = "px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-white shadow-sm transition";
+    btnAccCent.className = "px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-500 hover:text-slate-700 transition";
     lblBalance.textContent = "Balance / Modal ($)";
     calculateRisk();
 });
 
 btnAccCent.addEventListener('click', () => {
     isCentAccount = true;
-    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-white shadow-sm";
-    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded text-gray-500";
+    btnAccCent.className = "px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-white shadow-sm transition";
+    btnAccStd.className = "px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-500 hover:text-slate-700 transition";
     lblBalance.textContent = "Balance / Modal (Cent)";
     calculateRisk();
 });
@@ -83,7 +69,7 @@ function calculateRisk() {
         lotSize = riskAmount / (slPips * multiplier);
     }
 
-    const unitSymbol = isCentAccount ? 'Cent' : '$';
+    const unitSymbol = isCentAccount ? 'Cent ' : '$';
     resRiskUsd.textContent = `${unitSymbol}${riskAmount.toFixed(2)}`;
     resLot.textContent = `${lotSize.toFixed(2)} Lot`;
 }
@@ -93,7 +79,7 @@ function calculateRisk() {
 });
 calculateRisk();
 
-// Equity Curve Graph (Light Styling)
+// Equity Curve Graph (Soft Warm Theme)
 function initChart() {
     const ctx = document.getElementById('equityChart').getContext('2d');
     equityChart = new Chart(ctx, {
@@ -164,7 +150,7 @@ function renderJournal() {
         }
 
         const row = document.createElement('tr');
-        row.className = "border-b border-gray-100 hover:bg-gray-50";
+        row.className = "border-b border-slate-100 hover:bg-slate-50/80 transition";
         
         const pnlClass = pnlNum >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
         const typeClass = trade.type === 'BUY' 
@@ -172,15 +158,15 @@ function renderJournal() {
             : 'bg-rose-50 text-rose-700 border-rose-200';
 
         row.innerHTML = `
-            <td class="p-2.5">${trade.date}</td>
-            <td class="p-2.5"><span class="px-2 py-0.5 border rounded text-[10px] font-bold ${typeClass}">${trade.type}</span></td>
-            <td class="p-2.5 text-gray-500">${trade.setup || '-'}</td>
-            <td class="p-2.5">$${parseFloat(trade.entry).toFixed(2)}</td>
-            <td class="p-2.5">$${parseFloat(trade.exit).toFixed(2)}</td>
-            <td class="p-2.5">${trade.lot}</td>
-            <td class="p-2.5 ${pnlClass}">${pnlNum >= 0 ? '+' : ''}$${pnlNum.toFixed(2)}</td>
-            <td class="p-2.5 text-center">
-                <button onclick="deleteTrade(${index})" class="text-rose-500 hover:text-rose-700 font-semibold">Hapus</button>
+            <td class="p-3 font-medium text-slate-600">${trade.date}</td>
+            <td class="p-3"><span class="px-2 py-0.5 border rounded text-[10px] font-bold ${typeClass}">${trade.type}</span></td>
+            <td class="p-3 text-slate-500 font-medium">${trade.setup || '-'}</td>
+            <td class="p-3 font-medium">$${parseFloat(trade.entry).toFixed(2)}</td>
+            <td class="p-3 font-medium">$${parseFloat(trade.exit).toFixed(2)}</td>
+            <td class="p-3 font-medium">${trade.lot}</td>
+            <td class="p-3 ${pnlClass}">${pnlNum >= 0 ? '+' : ''}$${pnlNum.toFixed(2)}</td>
+            <td class="p-3 text-center">
+                <button onclick="deleteTrade(${index})" class="text-slate-400 hover:text-rose-600 font-semibold transition">Hapus</button>
             </td>
         `;
         journalTableBody.appendChild(row);
