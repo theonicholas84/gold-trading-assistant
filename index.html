@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Trading Gold (XAU/USD)</title>
+    <title>Asisten Trading Gold Pro (XAU/USD)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN untuk Equity Curve -->
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,23 +18,27 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-800 p-5 rounded-xl border border-slate-700 gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
-                    ⚡ Gold Trading Assistant
+                    ⚡ Gold Trading Assistant Pro
                 </h1>
-                <p class="text-xs text-slate-400">Trading Journal, Live Chart & Risk Management XAU/USD</p>
+                <p class="text-xs text-slate-400">Analisis Chart, Risk Calculator, Economic News & Deep Journaling</p>
             </div>
             
-            <div class="flex items-center gap-6 w-full md:w-auto justify-between border-t md:border-t-0 pt-3 md:pt-0 border-slate-700">
-                <div class="text-left md:text-right">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0 border-slate-700">
+                <div>
                     <span class="text-xs text-slate-400 uppercase tracking-wider block">Win Rate</span>
-                    <span id="winrate-val" class="text-xl font-bold text-emerald-400">0%</span>
+                    <span id="winrate-val" class="text-lg font-bold text-emerald-400">0%</span>
                 </div>
-                <div class="text-left md:text-right">
+                <div>
                     <span class="text-xs text-slate-400 uppercase tracking-wider block">Total P/L</span>
-                    <span id="total-pnl-val" class="text-xl font-bold text-slate-200">$0.00</span>
+                    <span id="total-pnl-val" class="text-lg font-bold text-slate-200">$0.00</span>
                 </div>
-                <div class="text-left md:text-right">
+                <div>
+                    <span class="text-xs text-slate-400 uppercase tracking-wider block">Profit Factor</span>
+                    <span id="profit-factor-val" class="text-lg font-bold text-amber-400">0.00</span>
+                </div>
+                <div>
                     <span class="text-xs text-slate-400 uppercase tracking-wider block">Total Trade</span>
-                    <span id="total-trades-val" class="text-xl font-bold text-amber-400">0</span>
+                    <span id="total-trades-val" class="text-lg font-bold text-slate-300">0</span>
                 </div>
             </div>
         </header>
@@ -42,7 +46,7 @@
         <!-- Main Section: Live Chart & Risk Calculator -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Live Gold Chart (TradingView Widget) -->
+            <!-- Live Gold Chart -->
             <div class="lg:col-span-2 bg-slate-800 p-4 rounded-xl border border-slate-700 h-[520px]">
                 <h2 class="text-sm font-semibold mb-3 text-slate-300 flex items-center justify-between">
                     <span>📈 Grafik Live XAU/USD</span>
@@ -57,10 +61,18 @@
             <div class="flex flex-col gap-6">
                 <!-- Calculator -->
                 <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                    <h2 class="text-md font-semibold mb-3 text-amber-400">🧮 Kalkulator Lot & Risk</h2>
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-md font-semibold text-amber-400">🧮 Risk & Lot Calculator</h2>
+                        <!-- Toggle Akun Standard / Cent -->
+                        <div class="flex items-center bg-slate-900 p-1 rounded-lg border border-slate-700">
+                            <button id="btn-acc-std" class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-slate-900">Standard</button>
+                            <button id="btn-acc-cent" class="px-2 py-0.5 text-[10px] font-bold rounded text-slate-400">Cent</button>
+                        </div>
+                    </div>
+                    
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">Balance / Modal ($)</label>
+                            <label class="block text-xs text-slate-400 mb-1" id="lbl-balance">Balance / Modal ($)</label>
                             <input type="number" id="calc-balance" value="1000" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-amber-400">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
@@ -89,11 +101,19 @@
 
                 <!-- Equity Curve Graph -->
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex-1 flex flex-col min-h-[180px]">
-                    <h2 class="text-xs font-semibold mb-2 text-slate-400">📊 Kurva Pertumbuhan Kapital ($)</h2>
+                    <h2 class="text-xs font-semibold mb-2 text-slate-400">📊 Kurva Performa Equity ($)</h2>
                     <div class="flex-1 relative w-full h-full min-h-[130px]">
                         <canvas id="equityChart"></canvas>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Economic News Calendar Widget -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h2 class="text-sm font-semibold mb-3 text-slate-300">📅 Kalender Ekonomi & Berita High Impact</h2>
+            <div class="tradingview-widget-container" style="height: 280px;">
+                <div id="tradingview_events"></div>
             </div>
         </div>
 
@@ -105,10 +125,10 @@
                 <!-- Backup Tools -->
                 <div class="flex items-center gap-2">
                     <button id="btn-export-csv" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded transition border border-slate-600">
-                        📥 Export CSV
+                        📥 CSV
                     </button>
                     <label class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded transition border border-slate-600 cursor-pointer">
-                        📤 Import Backup
+                        📤 Import
                         <input type="file" id="file-import" accept=".json" class="hidden">
                     </label>
                     <button id="btn-export-json" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded transition border border-slate-600">
@@ -118,7 +138,7 @@
             </div>
             
             <!-- Input Form Trade -->
-            <form id="trade-form" class="grid grid-cols-2 md:grid-cols-7 gap-3 mb-6 bg-slate-900/60 p-4 rounded-lg border border-slate-700/50">
+            <form id="trade-form" class="grid grid-cols-2 md:grid-cols-8 gap-3 mb-6 bg-slate-900/60 p-4 rounded-lg border border-slate-700/50">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Tanggal</label>
                     <input type="date" id="trade-date" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
@@ -131,15 +151,25 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Harga Entry</label>
+                    <label class="block text-xs text-slate-400 mb-1">Setup / Reason</label>
+                    <select id="trade-setup" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                        <option value="SND Breakout">SND Breakout</option>
+                        <option value="SNR Rejection">SNR Rejection</option>
+                        <option value="Trend Continuation">Trend Continuation</option>
+                        <option value="News Scalping">News Scalping</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Entry</label>
                     <input type="number" step="0.01" id="trade-entry" placeholder="2030.50" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Harga Exit</label>
+                    <label class="block text-xs text-slate-400 mb-1">Exit</label>
                     <input type="number" step="0.01" id="trade-exit" placeholder="2035.00" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Ukuran Lot</label>
+                    <label class="block text-xs text-slate-400 mb-1">Lot</label>
                     <input type="number" step="0.01" id="trade-lot" placeholder="0.10" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
                 </div>
                 <div>
@@ -160,6 +190,7 @@
                         <tr>
                             <th class="p-3">Tanggal</th>
                             <th class="p-3">Tipe</th>
+                            <th class="p-3">Setup</th>
                             <th class="p-3">Entry</th>
                             <th class="p-3">Exit</th>
                             <th class="p-3">Lot</th>
@@ -168,7 +199,7 @@
                         </tr>
                     </thead>
                     <tbody id="journal-table-body" class="divide-y divide-slate-700/60">
-                        <!-- Data trade akan dirender lewat JavaScript -->
+                        <!-- Data trade -->
                     </tbody>
                 </table>
             </div>
@@ -176,8 +207,9 @@
 
     </div>
 
-    <!-- TradingView Widget Script -->
+    <!-- External Scripts -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async></script>
     <script src="app.js"></script>
 </body>
 </html>
