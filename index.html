@@ -10,35 +10,35 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-6 min-h-screen">
+<body class="bg-slate-100 text-slate-800 font-sans p-4 md:p-6 min-h-screen">
 
     <div class="max-w-7xl mx-auto space-y-5">
         
-        <!-- Header & Top Stats (Light Theme) -->
-        <header class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <!-- Header & Top Stats -->
+        <header class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-amber-600 flex items-center gap-2">
                     ⚡ Gold Trading Assistant
                 </h1>
-                <p class="text-xs text-gray-500">Live Chart, Risk Calculator, News & Trading Journal</p>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">Live Chart, Risk Calculator, Economic Calendar & Journal</p>
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full md:w-auto bg-gray-50 p-3 rounded-lg border border-gray-200 text-center">
-                <div class="px-2">
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase block">Win Rate</span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full md:w-auto bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/60 text-center">
+                <div class="px-3 py-1">
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Win Rate</span>
                     <span id="winrate-val" class="text-lg font-bold text-emerald-600">0%</span>
                 </div>
-                <div class="px-2 border-l border-gray-200">
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase block">Total P/L</span>
-                    <span id="total-pnl-val" class="text-lg font-bold text-gray-800">$0.00</span>
+                <div class="px-3 py-1 border-l border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total P/L</span>
+                    <span id="total-pnl-val" class="text-lg font-bold text-slate-800">$0.00</span>
                 </div>
-                <div class="px-2 border-l border-gray-200">
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase block">Profit Factor</span>
+                <div class="px-3 py-1 border-l border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Profit Factor</span>
                     <span id="profit-factor-val" class="text-lg font-bold text-amber-600">0.00</span>
                 </div>
-                <div class="px-2 border-l border-gray-200">
-                    <span class="text-[10px] font-semibold text-gray-500 uppercase block">Total Trade</span>
-                    <span id="total-trades-val" class="text-lg font-bold text-gray-700">0</span>
+                <div class="px-3 py-1 border-l border-slate-200">
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total Trade</span>
+                    <span id="total-trades-val" class="text-lg font-bold text-slate-700">0</span>
                 </div>
             </div>
         </header>
@@ -47,12 +47,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             
             <!-- Live Gold Chart (2 Cols) -->
-            <div class="lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col h-[520px]">
-                <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
-                    <h2 class="text-sm font-bold text-gray-700">📈 Grafik Live XAU/USD</h2>
-                    <span class="text-xs text-gray-400">TradingView</span>
+            <div class="lg:col-span-2 bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[520px]">
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-700 flex items-center gap-2">📈 Grafik Live XAU/USD</h2>
+                    <span class="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">TradingView</span>
                 </div>
-                <div class="flex-1 w-full relative">
+                <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-100">
                     <div id="tradingview_gold" class="w-full h-full"></div>
                 </div>
             </div>
@@ -60,50 +60,50 @@
             <!-- Risk Calculator & Equity Chart (1 Col) -->
             <div class="flex flex-col gap-5 h-[520px]">
                 <!-- Calculator -->
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex-1 flex flex-col justify-between">
+                <div class="bg-white p-4.5 rounded-2xl shadow-sm border border-slate-200/80 flex-1 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-sm font-bold text-amber-600">🧮 Risk & Lot Calculator</h2>
+                            <h2 class="text-sm font-bold text-amber-600 flex items-center gap-1.5">🧮 Risk & Lot Calculator</h2>
                             <!-- Toggle Cent/Std -->
-                            <div class="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
-                                <button id="btn-acc-std" class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-white shadow-sm">Standard</button>
-                                <button id="btn-acc-cent" class="px-2 py-0.5 text-[10px] font-bold rounded text-gray-500">Cent</button>
+                            <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200/70">
+                                <button id="btn-acc-std" class="px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-white shadow-sm transition">Standard</button>
+                                <button id="btn-acc-cent" class="px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-500 hover:text-slate-700 transition">Cent</button>
                             </div>
                         </div>
                         
-                        <div class="space-y-2.5">
+                        <div class="space-y-3">
                             <div>
-                                <label class="block text-[11px] font-semibold text-gray-500 mb-1" id="lbl-balance">Balance / Modal ($)</label>
-                                <input type="number" id="calc-balance" value="1000" class="w-full bg-gray-50 border border-gray-300 rounded p-1.5 text-xs text-gray-800 focus:bg-white">
+                                <label class="block text-[11px] font-bold text-slate-500 mb-1" id="lbl-balance">Balance / Modal ($)</label>
+                                <input type="number" id="calc-balance" value="1000" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:bg-white transition">
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Resiko (%)</label>
-                                    <input type="number" id="calc-risk" value="1" step="0.1" class="w-full bg-gray-50 border border-gray-300 rounded p-1.5 text-xs text-gray-800 focus:bg-white">
+                                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Resiko (%)</label>
+                                    <input type="number" id="calc-risk" value="1" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:bg-white transition">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">SL (Pips)</label>
-                                    <input type="number" id="calc-sl-pips" value="30" class="w-full bg-gray-50 border border-gray-300 rounded p-1.5 text-xs text-gray-800 focus:bg-white">
+                                    <label class="block text-[11px] font-bold text-slate-500 mb-1">SL (Pips)</label>
+                                    <input type="number" id="calc-sl-pips" value="30" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:bg-white transition">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-3 p-2.5 bg-amber-50 rounded-lg border border-amber-200/60 space-y-1">
+                    <div class="mt-3 p-3 bg-amber-50/70 rounded-xl border border-amber-200/60 space-y-1.5">
                         <div class="flex justify-between text-xs">
-                            <span class="text-gray-600">Uang Beresiko:</span>
+                            <span class="text-slate-600 font-medium">Uang Beresiko:</span>
                             <span id="res-risk-usd" class="font-bold text-rose-600">$10.00</span>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-gray-600">Rekomendasi Lot:</span>
+                            <span class="text-slate-600 font-medium">Rekomendasi Lot:</span>
                             <span id="res-lot" class="font-bold text-amber-700">0.03 Lot</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Equity Chart -->
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 h-[210px] flex flex-col">
-                    <h2 class="text-xs font-bold text-gray-500 mb-2">📊 Kurva Performa Equity ($)</h2>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 h-[210px] flex flex-col">
+                    <h2 class="text-xs font-bold text-slate-500 mb-2">📊 Kurva Performa Equity ($)</h2>
                     <div class="flex-1 w-full relative">
                         <canvas id="equityChart"></canvas>
                     </div>
@@ -115,40 +115,40 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             
             <!-- Trading Journal (2 Cols) -->
-            <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-gray-100">
-                    <h2 class="text-base font-bold text-gray-800">📖 Jurnal Trading Gold</h2>
+            <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col min-h-[520px]">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+                    <h2 class="text-base font-bold text-slate-800">📖 Jurnal Trading Gold</h2>
                     
                     <div class="flex items-center gap-2">
-                        <button id="btn-export-csv" class="bg-gray-100 hover:bg-gray-200 text-xs text-gray-700 font-medium px-2.5 py-1 rounded border border-gray-300 transition">
+                        <button id="btn-export-csv" class="bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition">
                             📥 CSV
                         </button>
-                        <label class="bg-gray-100 hover:bg-gray-200 text-xs text-gray-700 font-medium px-2.5 py-1 rounded border border-gray-300 transition cursor-pointer">
+                        <label class="bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition cursor-pointer">
                             📤 Import
                             <input type="file" id="file-import" accept=".json" class="hidden">
                         </label>
-                        <button id="btn-export-json" class="bg-gray-100 hover:bg-gray-200 text-xs text-gray-700 font-medium px-2.5 py-1 rounded border border-gray-300 transition">
+                        <button id="btn-export-json" class="bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition">
                             💾 Backup
                         </button>
                     </div>
                 </div>
                 
                 <!-- Form Input Trade -->
-                <form id="trade-form" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <form id="trade-form" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200/70">
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Tanggal</label>
-                        <input type="date" id="trade-date" required class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Tanggal</label>
+                        <input type="date" id="trade-date" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Posisi</label>
-                        <select id="trade-type" class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Posisi</label>
+                        <select id="trade-type" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                             <option value="BUY">BUY</option>
                             <option value="SELL">SELL</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Setup</label>
-                        <select id="trade-setup" class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Setup</label>
+                        <select id="trade-setup" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                             <option value="SND Breakout">SND Breakout</option>
                             <option value="SNR Rejection">SNR Rejection</option>
                             <option value="Trend Continuation">Trend Continuation</option>
@@ -157,55 +157,68 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Entry</label>
-                        <input type="number" step="0.01" id="trade-entry" placeholder="2030.50" required class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Entry</label>
+                        <input type="number" step="0.01" id="trade-entry" placeholder="2030.50" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Exit</label>
-                        <input type="number" step="0.01" id="trade-exit" placeholder="2035.00" required class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Exit</label>
+                        <input type="number" step="0.01" id="trade-exit" placeholder="2035.00" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Lot</label>
-                        <input type="number" step="0.01" id="trade-lot" placeholder="0.10" required class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Lot</label>
+                        <input type="number" step="0.01" id="trade-lot" placeholder="0.10" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Profit/Loss ($)</label>
-                        <input type="number" step="0.01" id="trade-pnl" placeholder="45.00" required class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800">
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Profit/Loss ($)</label>
+                        <input type="number" step="0.01" id="trade-pnl" placeholder="45.00" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                     </div>
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold p-1.5 rounded text-xs transition shadow-sm">
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold p-2 rounded-lg text-xs transition shadow-sm">
                             + Simpan Trade
                         </button>
                     </div>
                 </form>
 
                 <!-- Table Journal -->
-                <div class="overflow-x-auto flex-1 max-h-[300px]">
-                    <table class="w-full text-left text-xs text-gray-700">
-                        <thead class="bg-gray-100 text-gray-500 uppercase sticky top-0 border-b border-gray-200 text-[10px]">
+                <div class="overflow-x-auto flex-1 max-h-[300px] rounded-xl border border-slate-100">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-50 text-slate-400 uppercase sticky top-0 border-b border-slate-200 text-[10px] font-bold tracking-wider">
                             <tr>
-                                <th class="p-2.5">Tanggal</th>
-                                <th class="p-2.5">Tipe</th>
-                                <th class="p-2.5">Setup</th>
-                                <th class="p-2.5">Entry</th>
-                                <th class="p-2.5">Exit</th>
-                                <th class="p-2.5">Lot</th>
-                                <th class="p-2.5">P/L ($)</th>
-                                <th class="p-2.5 text-center">Aksi</th>
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Tipe</th>
+                                <th class="p-3">Setup</th>
+                                <th class="p-3">Entry</th>
+                                <th class="p-3">Exit</th>
+                                <th class="p-3">Lot</th>
+                                <th class="p-3">P/L ($)</th>
+                                <th class="p-3 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="journal-table-body" class="divide-y divide-gray-100">
+                        <tbody id="journal-table-body" class="divide-y divide-slate-100">
                             <!-- Data JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Economic Calendar Widget (1 Col) -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col h-[510px]">
-                <h2 class="text-sm font-bold text-gray-700 mb-3 pb-2 border-b border-gray-100">📅 Kalender Berita USD</h2>
-                <div class="flex-1 w-full relative">
-                    <div id="tradingview_events" class="w-full h-full"></div>
+            <!-- Economic Calendar Widget (Fixed Script Loading) -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[520px]">
+                <h2 class="text-sm font-bold text-slate-700 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">📅 Kalender Berita USD</h2>
+                <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-100 relative">
+                    <div class="tradingview-widget-container h-full w-full">
+                        <div class="tradingview-widget-container__widget h-full w-full"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                        {
+                            "colorTheme": "light",
+                            "isTransparent": false,
+                            "width": "100%",
+                            "height": "100%",
+                            "locale": "id",
+                            "importanceFilter": "-1,0,1",
+                            "currencyFilter": "USD"
+                        }
+                        </script>
+                    </div>
                 </div>
             </div>
 
@@ -215,7 +228,6 @@
 
     <!-- External Scripts -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async></script>
     <script src="app.js"></script>
 </body>
 </html>
