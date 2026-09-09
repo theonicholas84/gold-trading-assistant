@@ -1,21 +1,21 @@
-// 1. Live TradingView Chart
+// Initialize TradingView Widget
 new TradingView.widget({
     "width": "100%",
     "height": "100%",
     "symbol": "OANDA:XAUUSD",
     "interval": "60",
     "timezone": "Asia/Jakarta",
-    "theme": "light",
+    "theme": "dark",
     "style": "1",
     "locale": "id",
-    "toolbar_bg": "#f8fafc",
+    "toolbar_bg": "#0f172a",
     "enable_publishing": false,
     "allow_symbol_change": true,
     "container_id": "tradingview_gold"
 });
 
-// Global State
-let trades = JSON.parse(localStorage.getItem('gold_trades_v4')) || [];
+// State & Storage
+let trades = JSON.parse(localStorage.getItem('gold_trades_v5')) || [];
 let isCentAccount = false;
 let currentCalDate = new Date();
 
@@ -25,7 +25,40 @@ let dayChart = null;
 let sessionChart = null;
 let winLossChart = null;
 
-// DOM Selectors
+// Tab Navigation Logic
+const tabBtns = {
+    dashboard: document.getElementById('tab-btn-dashboard'),
+    analytics: document.getElementById('tab-btn-analytics'),
+    terminal: document.getElementById('tab-btn-terminal')
+};
+
+const tabContents = {
+    dashboard: document.getElementById('tab-content-dashboard'),
+    analytics: document.getElementById('tab-content-analytics'),
+    terminal: document.getElementById('tab-content-terminal')
+};
+
+function switchTab(activeTabKey) {
+    Object.keys(tabBtns).forEach(key => {
+        if (key === activeTabKey) {
+            tabBtns[key].classList.add('active-tab');
+            tabBtns[key].classList.remove('text-slate-400');
+            tabContents[key].classList.remove('hidden');
+        } else {
+            tabBtns[key].classList.remove('active-tab');
+            tabBtns[key].classList.add('text-slate-400');
+            tabContents[key].classList.add('hidden');
+        }
+    });
+
+    logConsole(`SWITCHED: Navigated to [${activeTabKey.toUpperCase()}] Menu.`, 'INFO');
+}
+
+Object.keys(tabBtns).forEach(key => {
+    tabBtns[key].addEventListener('click', () => switchTab(key));
+});
+
+// DOM Risk Calculator
 const calcBalance = document.getElementById('calc-balance');
 const calcRisk = document.getElementById('calc-risk');
 const calcSlPips = document.getElementById('calc-sl-pips');
@@ -35,33 +68,23 @@ const btnAccStd = document.getElementById('btn-acc-std');
 const btnAccCent = document.getElementById('btn-acc-cent');
 const lblBalance = document.getElementById('lbl-balance');
 
-const tradeForm = document.getElementById('trade-form');
-const journalTableBody = document.getElementById('journal-table-body');
-const winrateVal = document.getElementById('winrate-val');
-const totalPnlVal = document.getElementById('total-pnl-val');
-const profitFactorVal = document.getElementById('profit-factor-val');
-const totalTradesVal = document.getElementById('total-trades-val');
-
-document.getElementById('trade-date').valueAsDate = new Date();
-
-// Toggle Akun Standard / Cent
+// Toggle Standard / Cent
 btnAccStd.addEventListener('click', () => {
     isCentAccount = false;
-    btnAccStd.className = "px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-white shadow-sm transition";
-    btnAccCent.className = "px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-500 hover:text-slate-700 transition";
+    btnAccStd.className = "px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-slate-950 shadow-sm transition";
+    btnAccCent.className = "px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-400 hover:text-slate-200 transition";
     lblBalance.textContent = "Balance / Modal ($)";
     calculateRisk();
 });
 
 btnAccCent.addEventListener('click', () => {
     isCentAccount = true;
-    btnAccCent.className = "px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-white shadow-sm transition";
-    btnAccStd.className = "px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-500 hover:text-slate-700 transition";
+    btnAccCent.className = "px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-slate-950 shadow-sm transition";
+    btnAccStd.className = "px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-400 hover:text-slate-200 transition";
     lblBalance.textContent = "Balance / Modal (Cent)";
     calculateRisk();
 });
 
-// Risk Calculator Logic
 function calculateRisk() {
     const balance = parseFloat(calcBalance.value) || 0;
     const riskPercent = parseFloat(calcRisk.value) || 0;
@@ -85,17 +108,84 @@ function calculateRisk() {
 });
 calculateRisk();
 
-// Initialize All Analytics Charts
+// Live Terminal Console Engine
+const consoleStream = document.getElementById('console-stream');
+const consoleInput = document.getElementById('console-input');
+
+function logConsole(message, type = 'SYS') {
+    if (!consoleStream) return;
+    
+    const now = new Date();
+    const timeStr = now.toTimeString().split(' ')[0];
+    
+    let badgeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+    if (type === 'WARN') badgeColor = 'text-amber-400 border-amber-500/30 bg-amber-500/10';
+    if (type === 'ERR') badgeColor = 'text-rose-400 border-rose-500/30 bg-rose-500/10';
+    if (type === 'TRADE') badgeColor = 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10';
+
+    const logRow = document.createElement('div');
+    logRow.className = "flex items-start gap-2 animate-fade-in";
+    logRow.innerHTML = `
+        <span class="text-slate-500 font-mono text-[11px]">[${timeStr}]</span>
+        <span class="px-1.5 py-0.2 text-[10px] border rounded font-mono font-bold ${badgeColor}">${type}</span>
+        <span class="text-slate-200 font-mono">${message}</span>
+    `;
+
+    consoleStream.appendChild(logRow);
+    consoleStream.scrollTop = consoleStream.scrollHeight;
+}
+
+document.getElementById('btn-clear-console')?.addEventListener('click', () => {
+    consoleStream.innerHTML = '';
+    logConsole('Console logs cleared.', 'SYS');
+});
+
+// Console Input Command Line (/help, /clear, /risk)
+consoleInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const cmd = consoleInput.value.trim();
+        if (!cmd) return;
+
+        logConsole(`> ${cmd}`, 'CMD');
+        consoleInput.value = '';
+
+        if (cmd === '/clear') {
+            consoleStream.innerHTML = '';
+        } else if (cmd === '/help') {
+            logConsole('Available Commands: /help, /clear, /risk [bal] [risk%] [sl], /stats', 'SYS');
+        } else if (cmd.startsWith('/risk')) {
+            const parts = cmd.split(' ');
+            if (parts.length === 4) {
+                calcBalance.value = parts[1];
+                calcRisk.value = parts[2];
+                calcSlPips.value = parts[3];
+                calculateRisk();
+                logConsole(`Calculator updated: Lot ${resLot.textContent}`, 'CALC');
+            } else {
+                logConsole('Usage: /risk [balance] [risk%] [slPips] (e.g. /risk 1000 1 30)', 'ERR');
+            }
+        } else if (cmd === '/stats') {
+            logConsole(`Trades: ${trades.length} | Winrate: ${document.getElementById('winrate-val').textContent} | Total PnL: ${document.getElementById('total-pnl-val').textContent}`, 'SYS');
+        } else {
+            logConsole(`Unknown command: "${cmd}". Type /help for assistance.`, 'WARN');
+        }
+    }
+});
+
+// Initialize Analytics & Charts
 function initCharts() {
-    // 1. Equity Line Chart
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = '#334155';
+
+    // 1. Equity Line
     const ctxEquity = document.getElementById('equityChart').getContext('2d');
     equityChart = new Chart(ctxEquity, {
         type: 'line',
-        data: { labels: [], datasets: [{ label: 'Equity ($)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.08)', borderWidth: 2, fill: true, tension: 0.3, pointRadius: 2 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 10 } } } } }
+        data: { labels: [], datasets: [{ label: 'Equity ($)', data: [], borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderWidth: 2, fill: true, tension: 0.3, pointRadius: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { font: { size: 10 } } } } }
     });
 
-    // 2. Day Chart (Senin - Jumat)
+    // 2. Day Chart
     const ctxDay = document.getElementById('dayChart').getContext('2d');
     dayChart = new Chart(ctxDay, {
         type: 'bar',
@@ -103,24 +193,23 @@ function initCharts() {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, ticks: { callback: v => v+'%' } } } }
     });
 
-    // 3. Session Chart (Asia, London, NY)
+    // 3. Session Chart
     const ctxSession = document.getElementById('sessionChart').getContext('2d');
     sessionChart = new Chart(ctxSession, {
         type: 'bar',
-        data: { labels: ['Asia', 'London', 'New York'], datasets: [{ label: 'P/L ($)', data: [0,0,0], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6 }] },
+        data: { labels: ['Asia', 'London', 'New York'], datasets: [{ label: 'P/L ($)', data: [0,0,0], backgroundColor: ['#38bdf8', '#34d399', '#fbbf24'], borderRadius: 6 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 
-    // 4. Win vs Loss Donut Chart
+    // 4. Win/Loss Donut
     const ctxWinLoss = document.getElementById('winLossChart').getContext('2d');
     winLossChart = new Chart(ctxWinLoss, {
         type: 'doughnut',
-        data: { labels: ['Win', 'Loss'], datasets: [{ data: [0, 0], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
+        data: { labels: ['Win', 'Loss'], datasets: [{ data: [0, 0], backgroundColor: ['#34d399', '#f87171'], borderWidth: 0 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
     });
 }
 
-// Update Charts Data
 function updateAnalytics() {
     if (!equityChart) return;
 
@@ -140,7 +229,7 @@ function updateAnalytics() {
     equityChart.data.datasets[0].data = eqPoints;
     equityChart.update();
 
-    // Day Analytics (0=Sun, 1=Mon, ..., 5=Fri)
+    // Day & Session
     const dayStats = { 1: { win: 0, total: 0 }, 2: { win: 0, total: 0 }, 3: { win: 0, total: 0 }, 4: { win: 0, total: 0 }, 5: { win: 0, total: 0 } };
     const sessionPnl = { 'Asia': 0, 'London': 0, 'New York': 0 };
     let winCount = 0;
@@ -163,28 +252,23 @@ function updateAnalytics() {
         else if (pnl < 0) lossCount++;
     });
 
-    // Update Day Chart
-    const dayWinRates = [1,2,3,4,5].map(d => dayStats[d].total > 0 ? ((dayStats[d].win / dayStats[d].total) * 100).toFixed(0) : 0);
-    dayChart.data.datasets[0].data = dayWinRates;
+    dayChart.data.datasets[0].data = [1,2,3,4,5].map(d => dayStats[d].total > 0 ? ((dayStats[d].win / dayStats[d].total) * 100).toFixed(0) : 0);
     dayChart.update();
 
-    // Update Session Chart
     sessionChart.data.datasets[0].data = [sessionPnl['Asia'], sessionPnl['London'], sessionPnl['New York']];
     sessionChart.update();
 
-    // Update Win/Loss Chart
     winLossChart.data.datasets[0].data = [winCount, lossCount];
     winLossChart.update();
 }
 
-// Render Monthly Calendar
+// Calendar Engine
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
     const label = document.getElementById('calendar-month-label');
     if (!grid || !label) return;
 
     grid.innerHTML = '';
-
     const year = currentCalDate.getFullYear();
     const month = currentCalDate.getMonth();
 
@@ -194,46 +278,43 @@ function renderCalendar() {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Group P/L by YYYY-MM-DD
     const pnlByDate = {};
     trades.forEach(t => {
         if (!pnlByDate[t.date]) pnlByDate[t.date] = 0;
         pnlByDate[t.date] += parseFloat(t.pnl);
     });
 
-    // Empty Slots before Day 1
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
-        emptyCell.className = 'cal-day bg-slate-50/50 border-none';
+        emptyCell.className = 'cal-day bg-slate-900/30 border-none';
         grid.appendChild(emptyCell);
     }
 
-    // Days of Month
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const dayPnl = pnlByDate[dateStr];
 
         const cell = document.createElement('div');
-        let bgClass = 'bg-slate-50 text-slate-600';
+        let bgClass = 'bg-slate-900/80 text-slate-400';
         let pnlText = '';
 
         if (dayPnl !== undefined) {
             cell.classList.add('has-data');
             if (dayPnl > 0) {
-                bgClass = 'bg-emerald-50 text-emerald-800 border-emerald-200 font-bold';
+                bgClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-bold';
                 pnlText = `+$${dayPnl.toFixed(1)}`;
             } else if (dayPnl < 0) {
-                bgClass = 'bg-rose-50 text-rose-800 border-rose-200 font-bold';
+                bgClass = 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold';
                 pnlText = `-$${Math.abs(dayPnl).toFixed(1)}`;
             } else {
-                bgClass = 'bg-slate-100 text-slate-700';
+                bgClass = 'bg-slate-800 text-slate-300';
                 pnlText = '$0';
             }
         }
 
         cell.className = `cal-day ${bgClass}`;
         cell.innerHTML = `
-            <span class="text-[10px] font-bold text-slate-400">${day}</span>
+            <span class="text-[10px] font-bold text-slate-500">${day}</span>
             <span class="text-[10px]">${pnlText}</span>
         `;
         grid.appendChild(cell);
@@ -252,6 +333,9 @@ document.getElementById('btn-next-month')?.addEventListener('click', () => {
 
 // Render Journal Table & Stats
 function renderJournal() {
+    const journalTableBody = document.getElementById('journal-table-body');
+    if (!journalTableBody) return;
+
     journalTableBody.innerHTML = '';
     let winCount = 0;
     let netPnl = 0;
@@ -270,24 +354,24 @@ function renderJournal() {
         }
 
         const row = document.createElement('tr');
-        row.className = "border-b border-slate-100 hover:bg-slate-50/80 transition";
+        row.className = "border-b border-slate-800 hover:bg-slate-800/50 transition";
         
-        const pnlClass = pnlNum >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
+        const pnlClass = pnlNum >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
         const typeClass = trade.type === 'BUY' 
-            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-            : 'bg-rose-50 text-rose-700 border-rose-200';
+            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
+            : 'bg-rose-500/20 text-rose-300 border-rose-500/30';
 
         row.innerHTML = `
-            <td class="p-3 font-medium text-slate-600">${trade.date}</td>
-            <td class="p-3 font-medium text-slate-500">${trade.session || 'Asia'}</td>
+            <td class="p-3 font-medium text-slate-400">${trade.date}</td>
+            <td class="p-3 font-medium text-slate-400">${trade.session || 'Asia'}</td>
             <td class="p-3"><span class="px-2 py-0.5 border rounded text-[10px] font-bold ${typeClass}">${trade.type}</span></td>
-            <td class="p-3 text-slate-500 font-medium">${trade.setup || '-'}</td>
+            <td class="p-3 text-slate-400 font-medium">${trade.setup || '-'}</td>
             <td class="p-3 font-medium">$${parseFloat(trade.entry).toFixed(2)}</td>
             <td class="p-3 font-medium">$${parseFloat(trade.exit).toFixed(2)}</td>
             <td class="p-3 font-medium">${trade.lot}</td>
             <td class="p-3 ${pnlClass}">${pnlNum >= 0 ? '+' : ''}$${pnlNum.toFixed(2)}</td>
             <td class="p-3 text-center">
-                <button type="button" onclick="deleteTrade(${index})" class="text-slate-400 hover:text-rose-600 font-semibold transition">Hapus</button>
+                <button type="button" onclick="deleteTrade(${index})" class="text-slate-500 hover:text-rose-400 font-semibold transition">Hapus</button>
             </td>
         `;
         journalTableBody.appendChild(row);
@@ -297,19 +381,21 @@ function renderJournal() {
     const winRate = totalTrades > 0 ? ((winCount / totalTrades) * 100).toFixed(1) : 0;
     const profitFactor = grossLoss > 0 ? (grossWin / grossLoss).toFixed(2) : (grossWin > 0 ? "INF" : "0.00");
     
-    winrateVal.textContent = `${winRate}%`;
-    totalTradesVal.textContent = totalTrades;
-    profitFactorVal.textContent = profitFactor;
-    totalPnlVal.textContent = `${netPnl >= 0 ? '+' : ''}$${netPnl.toFixed(2)}`;
-    totalPnlVal.className = `text-lg font-bold ${netPnl >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+    document.getElementById('winrate-val').textContent = `${winRate}%`;
+    document.getElementById('total-trades-val').textContent = totalTrades;
+    document.getElementById('profit-factor-val').textContent = profitFactor;
+    
+    const totalPnlElem = document.getElementById('total-pnl-val');
+    totalPnlElem.textContent = `${netPnl >= 0 ? '+' : ''}$${netPnl.toFixed(2)}`;
+    totalPnlElem.className = `text-lg font-black drop-shadow ${netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-    localStorage.setItem('gold_trades_v4', JSON.stringify(trades));
+    localStorage.setItem('gold_trades_v5', JSON.stringify(trades));
     updateAnalytics();
     renderCalendar();
 }
 
-// Form Submit
-tradeForm.addEventListener('submit', (e) => {
+// Form Submit Event
+document.getElementById('trade-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const newTrade = {
@@ -326,6 +412,8 @@ tradeForm.addEventListener('submit', (e) => {
     trades.unshift(newTrade);
     renderJournal();
 
+    logConsole(`RECORDED: ${newTrade.type} XAUUSD @ ${newTrade.entry} | PnL: $${newTrade.pnl}`, 'TRADE');
+
     document.getElementById('trade-entry').value = '';
     document.getElementById('trade-exit').value = '';
     document.getElementById('trade-pnl').value = '';
@@ -333,57 +421,20 @@ tradeForm.addEventListener('submit', (e) => {
 
 function deleteTrade(index) {
     if (confirm('Hapus transaksi ini dari jurnal?')) {
-        trades.splice(index, 1);
+        const deleted = trades.splice(index, 1)[0];
         renderJournal();
+        logConsole(`DELETED: Trade ${deleted.date} (${deleted.type} @ ${deleted.entry})`, 'WARN');
     }
 }
 
-// Export CSV / JSON & Import
-document.getElementById('btn-export-csv').addEventListener('click', () => {
-    if (trades.length === 0) return alert('Belum ada data.');
-    let csvContent = "data:text/csv;charset=utf-8,Tanggal,Sesi,Posisi,Setup,Entry,Exit,Lot,PnL\n";
-    trades.forEach(t => {
-        csvContent += `${t.date},${t.session || ''},${t.type},${t.setup || ''},${t.entry},${t.exit},${t.lot},${t.pnl}\n`;
-    });
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `journal_gold_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
+// Initial Log Sequence
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('trade-date').valueAsDate = new Date();
+    initCharts();
+    renderJournal();
 
-document.getElementById('btn-export-json').addEventListener('click', () => {
-    if (trades.length === 0) return alert('Belum ada data.');
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(trades, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `backup_journal_gold.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    logConsole('SYSTEM: Initializing Gold Terminal Engine v5.0...', 'SYS');
+    logConsole(`DATABASE: Loaded ${trades.length} trade record(s) from local storage.`, 'SYS');
+    logConsole('MARKET DATA: XAUUSD Live Stream Connected.', 'SYS');
+    logConsole('Terminal ready. Use command line below or navigate tabs.', 'INFO');
 });
-
-document.getElementById('file-import').addEventListener('change', (e) => {
-    const fileReader = new FileReader();
-    fileReader.onload = (event) => {
-        try {
-            const importedTrades = JSON.parse(event.target.result);
-            if (Array.isArray(importedTrades)) {
-                trades = importedTrades;
-                renderJournal();
-                alert('Data jurnal berhasil diimpor!');
-            }
-        } catch (err) {
-            alert('File JSON tidak valid.');
-        }
-    };
-    if (e.target.files[0]) {
-        fileReader.readAsText(e.target.files[0]);
-    }
-});
-
-// App Initialization
-initCharts();
-renderJournal();
