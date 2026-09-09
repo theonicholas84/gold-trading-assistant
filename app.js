@@ -15,9 +15,15 @@ new TradingView.widget({
 });
 
 // Global State
-let trades = JSON.parse(localStorage.getItem('gold_trades_v3')) || [];
-let equityChart = null;
+let trades = JSON.parse(localStorage.getItem('gold_trades_v4')) || [];
 let isCentAccount = false;
+let currentCalDate = new Date();
+
+// Charts
+let equityChart = null;
+let dayChart = null;
+let sessionChart = null;
+let winLossChart = null;
 
 // DOM Selectors
 const calcBalance = document.getElementById('calc-balance');
@@ -79,58 +85,172 @@ function calculateRisk() {
 });
 calculateRisk();
 
-// Equity Curve Graph
-function initChart() {
-    const ctx = document.getElementById('equityChart').getContext('2d');
-    equityChart = new Chart(ctx, {
+// Initialize All Analytics Charts
+function initCharts() {
+    // 1. Equity Line Chart
+    const ctxEquity = document.getElementById('equityChart').getContext('2d');
+    equityChart = new Chart(ctxEquity, {
         type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Equity ($)',
-                data: [],
-                borderColor: '#d97706',
-                backgroundColor: 'rgba(217, 119, 6, 0.08)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.3,
-                pointRadius: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { display: false },
-                y: {
-                    grid: { color: '#f1f5f9' },
-                    ticks: { color: '#64748b', font: { size: 10 } }
-                }
-            }
-        }
+        data: { labels: [], datasets: [{ label: 'Equity ($)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.08)', borderWidth: 2, fill: true, tension: 0.3, pointRadius: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 10 } } } } }
+    });
+
+    // 2. Day Chart (Senin - Jumat)
+    const ctxDay = document.getElementById('dayChart').getContext('2d');
+    dayChart = new Chart(ctxDay, {
+        type: 'bar',
+        data: { labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'], datasets: [{ label: 'Win Rate %', data: [0,0,0,0,0], backgroundColor: '#f59e0b', borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, ticks: { callback: v => v+'%' } } } }
+    });
+
+    // 3. Session Chart (Asia, London, NY)
+    const ctxSession = document.getElementById('sessionChart').getContext('2d');
+    sessionChart = new Chart(ctxSession, {
+        type: 'bar',
+        data: { labels: ['Asia', 'London', 'New York'], datasets: [{ label: 'P/L ($)', data: [0,0,0], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'], borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    // 4. Win vs Loss Donut Chart
+    const ctxWinLoss = document.getElementById('winLossChart').getContext('2d');
+    winLossChart = new Chart(ctxWinLoss, {
+        type: 'doughnut',
+        data: { labels: ['Win', 'Loss'], datasets: [{ data: [0, 0], backgroundColor: ['#10b981', '#ef4444'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
     });
 }
 
-function updateChart() {
+// Update Charts Data
+function updateAnalytics() {
     if (!equityChart) return;
+
+    // Equity Curve
     const sortedTrades = [...trades].reverse();
     let currentEquity = parseFloat(calcBalance.value) || 1000;
-    const dataPoints = [currentEquity];
-    const labels = ['Start'];
+    const eqPoints = [currentEquity];
+    const eqLabels = ['Start'];
 
     sortedTrades.forEach((t, i) => {
         currentEquity += parseFloat(t.pnl);
-        dataPoints.push(currentEquity);
-        labels.push(`T${i + 1}`);
+        eqPoints.push(currentEquity);
+        eqLabels.push(`T${i + 1}`);
     });
 
-    equityChart.data.labels = labels;
-    equityChart.data.datasets[0].data = dataPoints;
+    equityChart.data.labels = eqLabels;
+    equityChart.data.datasets[0].data = eqPoints;
     equityChart.update();
+
+    // Day Analytics (0=Sun, 1=Mon, ..., 5=Fri)
+    const dayStats = { 1: { win: 0, total: 0 }, 2: { win: 0, total: 0 }, 3: { win: 0, total: 0 }, 4: { win: 0, total: 0 }, 5: { win: 0, total: 0 } };
+    const sessionPnl = { 'Asia': 0, 'London': 0, 'New York': 0 };
+    let winCount = 0;
+    let lossCount = 0;
+
+    trades.forEach(t => {
+        const pnl = parseFloat(t.pnl);
+        const d = new Date(t.date).getDay();
+        
+        if (d >= 1 && d <= 5) {
+            dayStats[d].total++;
+            if (pnl > 0) dayStats[d].win++;
+        }
+
+        if (t.session && sessionPnl.hasOwnProperty(t.session)) {
+            sessionPnl[t.session] += pnl;
+        }
+
+        if (pnl > 0) winCount++;
+        else if (pnl < 0) lossCount++;
+    });
+
+    // Update Day Chart
+    const dayWinRates = [1,2,3,4,5].map(d => dayStats[d].total > 0 ? ((dayStats[d].win / dayStats[d].total) * 100).toFixed(0) : 0);
+    dayChart.data.datasets[0].data = dayWinRates;
+    dayChart.update();
+
+    // Update Session Chart
+    sessionChart.data.datasets[0].data = [sessionPnl['Asia'], sessionPnl['London'], sessionPnl['New York']];
+    sessionChart.update();
+
+    // Update Win/Loss Chart
+    winLossChart.data.datasets[0].data = [winCount, lossCount];
+    winLossChart.update();
 }
 
-// Render Table & Stats
+// Render Monthly Calendar
+function renderCalendar() {
+    const grid = document.getElementById('calendar-grid');
+    const label = document.getElementById('calendar-month-label');
+    if (!grid || !label) return;
+
+    grid.innerHTML = '';
+
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
+
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    label.textContent = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Group P/L by YYYY-MM-DD
+    const pnlByDate = {};
+    trades.forEach(t => {
+        if (!pnlByDate[t.date]) pnlByDate[t.date] = 0;
+        pnlByDate[t.date] += parseFloat(t.pnl);
+    });
+
+    // Empty Slots before Day 1
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'cal-day bg-slate-50/50 border-none';
+        grid.appendChild(emptyCell);
+    }
+
+    // Days of Month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayPnl = pnlByDate[dateStr];
+
+        const cell = document.createElement('div');
+        let bgClass = 'bg-slate-50 text-slate-600';
+        let pnlText = '';
+
+        if (dayPnl !== undefined) {
+            cell.classList.add('has-data');
+            if (dayPnl > 0) {
+                bgClass = 'bg-emerald-50 text-emerald-800 border-emerald-200 font-bold';
+                pnlText = `+$${dayPnl.toFixed(1)}`;
+            } else if (dayPnl < 0) {
+                bgClass = 'bg-rose-50 text-rose-800 border-rose-200 font-bold';
+                pnlText = `-$${Math.abs(dayPnl).toFixed(1)}`;
+            } else {
+                bgClass = 'bg-slate-100 text-slate-700';
+                pnlText = '$0';
+            }
+        }
+
+        cell.className = `cal-day ${bgClass}`;
+        cell.innerHTML = `
+            <span class="text-[10px] font-bold text-slate-400">${day}</span>
+            <span class="text-[10px]">${pnlText}</span>
+        `;
+        grid.appendChild(cell);
+    }
+}
+
+document.getElementById('btn-prev-month')?.addEventListener('click', () => {
+    currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+    renderCalendar();
+});
+
+document.getElementById('btn-next-month')?.addEventListener('click', () => {
+    currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+    renderCalendar();
+});
+
+// Render Journal Table & Stats
 function renderJournal() {
     journalTableBody.innerHTML = '';
     let winCount = 0;
@@ -159,6 +279,7 @@ function renderJournal() {
 
         row.innerHTML = `
             <td class="p-3 font-medium text-slate-600">${trade.date}</td>
+            <td class="p-3 font-medium text-slate-500">${trade.session || 'Asia'}</td>
             <td class="p-3"><span class="px-2 py-0.5 border rounded text-[10px] font-bold ${typeClass}">${trade.type}</span></td>
             <td class="p-3 text-slate-500 font-medium">${trade.setup || '-'}</td>
             <td class="p-3 font-medium">$${parseFloat(trade.entry).toFixed(2)}</td>
@@ -182,8 +303,9 @@ function renderJournal() {
     totalPnlVal.textContent = `${netPnl >= 0 ? '+' : ''}$${netPnl.toFixed(2)}`;
     totalPnlVal.className = `text-lg font-bold ${netPnl >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
 
-    localStorage.setItem('gold_trades_v3', JSON.stringify(trades));
-    updateChart();
+    localStorage.setItem('gold_trades_v4', JSON.stringify(trades));
+    updateAnalytics();
+    renderCalendar();
 }
 
 // Form Submit
@@ -192,6 +314,7 @@ tradeForm.addEventListener('submit', (e) => {
 
     const newTrade = {
         date: document.getElementById('trade-date').value,
+        session: document.getElementById('trade-session').value,
         type: document.getElementById('trade-type').value,
         setup: document.getElementById('trade-setup').value,
         entry: document.getElementById('trade-entry').value,
@@ -215,12 +338,12 @@ function deleteTrade(index) {
     }
 }
 
-// Backup CSV/JSON
+// Export CSV / JSON & Import
 document.getElementById('btn-export-csv').addEventListener('click', () => {
     if (trades.length === 0) return alert('Belum ada data.');
-    let csvContent = "data:text/csv;charset=utf-8,Tanggal,Posisi,Setup,Entry,Exit,Lot,PnL\n";
+    let csvContent = "data:text/csv;charset=utf-8,Tanggal,Sesi,Posisi,Setup,Entry,Exit,Lot,PnL\n";
     trades.forEach(t => {
-        csvContent += `${t.date},${t.type},${t.setup || ''},${t.entry},${t.exit},${t.lot},${t.pnl}\n`;
+        csvContent += `${t.date},${t.session || ''},${t.type},${t.setup || ''},${t.entry},${t.exit},${t.lot},${t.pnl}\n`;
     });
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -261,6 +384,6 @@ document.getElementById('file-import').addEventListener('change', (e) => {
     }
 });
 
-// Init App
-initChart();
+// App Initialization
+initCharts();
 renderJournal();
