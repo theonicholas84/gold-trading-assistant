@@ -1,4 +1,4 @@
-// 1. Inisialisasi TradingView Live Chart
+// 1. Live TradingView Chart
 new TradingView.widget({
     "width": "100%",
     "height": "100%",
@@ -14,40 +14,78 @@ new TradingView.widget({
     "container_id": "tradingview_gold"
 });
 
-// State Data Jurnal
-let trades = JSON.parse(localStorage.getItem('gold_trades_v2')) || [];
-let equityChart = null;
+// 2. Init Economic Calendar Widget (USD focus)
+const eventsWidgetContainer = document.getElementById('tradingview_events');
+if (eventsWidgetContainer) {
+    eventsWidgetContainer.innerHTML = JSON.stringify({
+        "colorTheme": "dark",
+        "isTransparent": true,
+        "width": "100%",
+        "height": "100%",
+        "locale": "id",
+        "importanceFilter": "0,1",
+        "currencyFilter": "USD"
+    });
+}
 
-// DOM Elements
+// Global State
+let trades = JSON.parse(localStorage.getItem('gold_trades_v3')) || [];
+let equityChart = null;
+let isCentAccount = false;
+
+// DOM Selectors
 const calcBalance = document.getElementById('calc-balance');
 const calcRisk = document.getElementById('calc-risk');
 const calcSlPips = document.getElementById('calc-sl-pips');
 const resRiskUsd = document.getElementById('res-risk-usd');
 const resLot = document.getElementById('res-lot');
+const btnAccStd = document.getElementById('btn-acc-std');
+const btnAccCent = document.getElementById('btn-acc-cent');
+const lblBalance = document.getElementById('lbl-balance');
 
 const tradeForm = document.getElementById('trade-form');
 const journalTableBody = document.getElementById('journal-table-body');
 const winrateVal = document.getElementById('winrate-val');
 const totalPnlVal = document.getElementById('total-pnl-val');
+const profitFactorVal = document.getElementById('profit-factor-val');
 const totalTradesVal = document.getElementById('total-trades-val');
 
-// Tanggal default hari ini pada form
 document.getElementById('trade-date').valueAsDate = new Date();
 
-// 2. Logika Kalkulator Risk
+// Toggle Akun Standard / Cent
+btnAccStd.addEventListener('click', () => {
+    isCentAccount = false;
+    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-slate-900";
+    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded text-slate-400";
+    lblBalance.textContent = "Balance / Modal ($)";
+    calculateRisk();
+});
+
+btnAccCent.addEventListener('click', () => {
+    isCentAccount = true;
+    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-slate-900";
+    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded text-slate-400";
+    lblBalance.textContent = "Balance / Modal (Cent)";
+    calculateRisk();
+});
+
+// Kalkulator Risk
 function calculateRisk() {
     const balance = parseFloat(calcBalance.value) || 0;
     const riskPercent = parseFloat(calcRisk.value) || 0;
     const slPips = parseFloat(calcSlPips.value) || 0;
 
-    const riskAmountUsd = balance * (riskPercent / 100);
+    const riskAmount = balance * (riskPercent / 100);
     let lotSize = 0;
     
     if (slPips > 0) {
-        lotSize = riskAmountUsd / (slPips * 10);
+        // Pada akun Cent, 1 lot cent nilainya 1/100 dari standard lot
+        const multiplier = isCentAccount ? 0.1 : 10;
+        lotSize = riskAmount / (slPips * multiplier);
     }
 
-    resRiskUsd.textContent = `$${riskAmountUsd.toFixed(2)}`;
+    const unitSymbol = isCentAccount ? 'Cent' : '$';
+    resRiskUsd.textContent = `${unitSymbol}${riskAmount.toFixed(2)}`;
     resLot.textContent = `${lotSize.toFixed(2)} Lot`;
 }
 
@@ -56,7 +94,7 @@ function calculateRisk() {
 });
 calculateRisk();
 
-// 3. Render Inisialisasi Chart Equity
+// Chart Equity Growth
 function initChart() {
     const ctx = document.getElementById('equityChart').getContext('2d');
     equityChart = new Chart(ctx, {
@@ -64,7 +102,7 @@ function initChart() {
         data: {
             labels: [],
             datasets: [{
-                label: 'Equity Growth ($)',
+                label: 'Equity ($)',
                 data: [],
                 borderColor: '#f59e0b',
                 backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -89,14 +127,12 @@ function initChart() {
     });
 }
 
-// Update Data Chart
 function updateChart() {
     if (!equityChart) return;
-    
     const sortedTrades = [...trades].reverse();
     let currentEquity = parseFloat(calcBalance.value) || 1000;
     const dataPoints = [currentEquity];
-    const labels = ['Initial'];
+    const labels = ['Start'];
 
     sortedTrades.forEach((t, i) => {
         currentEquity += parseFloat(t.pnl);
@@ -109,19 +145,27 @@ function updateChart() {
     equityChart.update();
 }
 
-// 4. Render Tabel Jurnal & Statistik
+// Render Jurnal & Statistik Lanjutan
 function renderJournal() {
     journalTableBody.innerHTML = '';
     let winCount = 0;
     let netPnl = 0;
+    let grossWin = 0;
+    let grossLoss = 0;
 
     trades.forEach((trade, index) => {
         const pnlNum = parseFloat(trade.pnl);
         netPnl += pnlNum;
-        if (pnlNum > 0) winCount++;
+        
+        if (pnlNum > 0) {
+            winCount++;
+            grossWin += pnlNum;
+        } else {
+            grossLoss += Math.abs(pnlNum);
+        }
 
         const row = document.createElement('tr');
-        row.className = "hover-row border-b border-slate-700/40";
+        row.className = "hover:bg-slate-750 border-b border-slate-700/40";
         
         const pnlClass = pnlNum >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold';
         const typeClass = trade.type === 'BUY' 
@@ -131,6 +175,7 @@ function renderJournal() {
         row.innerHTML = `
             <td class="p-3">${trade.date}</td>
             <td class="p-3"><span class="px-2 py-0.5 border rounded text-[10px] ${typeClass}">${trade.type}</span></td>
+            <td class="p-3 text-slate-400">${trade.setup || '-'}</td>
             <td class="p-3">$${parseFloat(trade.entry).toFixed(2)}</td>
             <td class="p-3">$${parseFloat(trade.exit).toFixed(2)}</td>
             <td class="p-3">${trade.lot}</td>
@@ -142,26 +187,29 @@ function renderJournal() {
         journalTableBody.appendChild(row);
     });
 
-    // Stats
+    // Statistik Calculations
     const totalTrades = trades.length;
     const winRate = totalTrades > 0 ? ((winCount / totalTrades) * 100).toFixed(1) : 0;
+    const profitFactor = grossLoss > 0 ? (grossWin / grossLoss).toFixed(2) : (grossWin > 0 ? "INF" : "0.00");
     
     winrateVal.textContent = `${winRate}%`;
     totalTradesVal.textContent = totalTrades;
+    profitFactorVal.textContent = profitFactor;
     totalPnlVal.textContent = `${netPnl >= 0 ? '+' : ''}$${netPnl.toFixed(2)}`;
-    totalPnlVal.className = `text-xl font-bold ${netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+    totalPnlVal.className = `text-lg font-bold ${netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-    localStorage.setItem('gold_trades_v2', JSON.stringify(trades));
+    localStorage.setItem('gold_trades_v3', JSON.stringify(trades));
     updateChart();
 }
 
-// Input Submit Form Trade
+// Event Submit Trade Form
 tradeForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const newTrade = {
         date: document.getElementById('trade-date').value,
         type: document.getElementById('trade-type').value,
+        setup: document.getElementById('trade-setup').value,
         entry: document.getElementById('trade-entry').value,
         exit: document.getElementById('trade-exit').value,
         lot: document.getElementById('trade-lot').value,
@@ -177,30 +225,30 @@ tradeForm.addEventListener('submit', (e) => {
 });
 
 function deleteTrade(index) {
-    if (confirm('Yakin ingin menghapus riwayat trade ini?')) {
+    if (confirm('Hapus transaksi ini dari jurnal?')) {
         trades.splice(index, 1);
         renderJournal();
     }
 }
 
-// 5. Fitur Export / Import Data
+// Backup & Import
 document.getElementById('btn-export-csv').addEventListener('click', () => {
-    if (trades.length === 0) return alert('Belum ada data untuk di-export');
-    let csvContent = "data:text/csv;charset=utf-8,Tanggal,Posisi,Entry,Exit,Lot,PnL\n";
+    if (trades.length === 0) return alert('Belum ada data.');
+    let csvContent = "data:text/csv;charset=utf-8,Tanggal,Posisi,Setup,Entry,Exit,Lot,PnL\n";
     trades.forEach(t => {
-        csvContent += `${t.date},${t.type},${t.entry},${t.exit},${t.lot},${t.pnl}\n`;
+        csvContent += `${t.date},${t.type},${t.setup || ''},${t.entry},${t.exit},${t.lot},${t.pnl}\n`;
     });
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `gold_journal_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `journal_gold_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 });
 
 document.getElementById('btn-export-json').addEventListener('click', () => {
-    if (trades.length === 0) return alert('Belum ada data untuk di-export');
+    if (trades.length === 0) return alert('Belum ada data.');
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(trades, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
@@ -218,10 +266,10 @@ document.getElementById('file-import').addEventListener('change', (e) => {
             if (Array.isArray(importedTrades)) {
                 trades = importedTrades;
                 renderJournal();
-                alert('Berhasil mengimpor data jurnal!');
+                alert('Data jurnal berhasil diperbarui!');
             }
         } catch (err) {
-            alert('Format file JSON tidak valid.');
+            alert('File JSON tidak valid.');
         }
     };
     if (e.target.files[0]) {
