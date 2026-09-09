@@ -3,296 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Trading Gold Pro</title>
+    <title>Gold Trading Command Center Pro</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans p-4 md:p-6 min-h-screen">
+<body class="bg-slate-900 text-slate-100 font-sans p-3 md:p-6 min-h-screen">
 
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-5">
         
         <!-- Header & Top Stats -->
-        <header class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header class="bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-amber-600 flex items-center gap-2">
-                    ⚡ Gold Trading Assistant
+                <h1 class="text-2xl font-black text-amber-400 flex items-center gap-2 tracking-wide">
+                    ⚡ GOLD TERMINAL <span class="text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full">v5.0 PRO</span>
                 </h1>
-                <p class="text-xs text-slate-500 font-medium mt-0.5">Live Chart, Risk Calculator, Analytics & Interactive Journal</p>
+                <p class="text-xs text-slate-400 font-medium mt-0.5">Advanced Trading Journal, Risk Calculator & Console Stream</p>
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full md:w-auto bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/60 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full md:w-auto bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80 text-center">
                 <div class="px-3 py-1">
                     <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Win Rate</span>
-                    <span id="winrate-val" class="text-lg font-bold text-emerald-600">0%</span>
+                    <span id="winrate-val" class="text-lg font-black text-emerald-400 drop-shadow">0%</span>
                 </div>
-                <div class="px-3 py-1 border-l border-slate-200">
+                <div class="px-3 py-1 border-l border-slate-800">
                     <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total P/L</span>
-                    <span id="total-pnl-val" class="text-lg font-bold text-slate-800">$0.00</span>
+                    <span id="total-pnl-val" class="text-lg font-black text-slate-200 drop-shadow">$0.00</span>
                 </div>
-                <div class="px-3 py-1 border-l border-slate-200">
+                <div class="px-3 py-1 border-l border-slate-800">
                     <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Profit Factor</span>
-                    <span id="profit-factor-val" class="text-lg font-bold text-amber-600">0.00</span>
+                    <span id="profit-factor-val" class="text-lg font-black text-amber-400 drop-shadow">0.00</span>
                 </div>
-                <div class="px-3 py-1 border-l border-slate-200">
+                <div class="px-3 py-1 border-l border-slate-800">
                     <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total Trade</span>
-                    <span id="total-trades-val" class="text-lg font-bold text-slate-700">0</span>
+                    <span id="total-trades-val" class="text-lg font-black text-slate-300">0</span>
                 </div>
             </div>
         </header>
 
-        <!-- Main Section: Live Chart & Risk Calculator -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            
-            <!-- Live Gold Chart (2 Cols) -->
-            <div class="lg:col-span-2 bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[520px]">
-                <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
-                    <h2 class="text-sm font-bold text-slate-700 flex items-center gap-2">📈 Grafik Live XAU/USD</h2>
-                    <span class="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">TradingView</span>
+        <!-- Navigation Tabs Bar -->
+        <nav class="flex gap-2 bg-slate-800/50 p-1.5 rounded-xl border border-slate-700/50 backdrop-blur-sm">
+            <button id="tab-btn-dashboard" class="tab-btn active-tab flex-1 md:flex-none px-5 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2">
+                <span>📊</span> Dashboard Main
+            </button>
+            <button id="tab-btn-analytics" class="tab-btn flex-1 md:flex-none px-5 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200">
+                <span>📈</span> Analytics & Time
+            </button>
+            <button id="tab-btn-terminal" class="tab-btn flex-1 md:flex-none px-5 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 relative">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>💻</span> Terminal Console
+            </button>
+        </nav>
+
+        <!-- TAB 1: DASHBOARD MAIN -->
+        <div id="tab-content-dashboard" class="tab-content space-y-5 animate-fade-in">
+            <!-- Live Chart & Risk Calculator -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <!-- Live Gold Chart (2 Cols) -->
+                <div class="lg:col-span-2 bg-slate-800/60 p-4 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col h-[520px]">
+                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-700/50">
+                        <h2 class="text-xs font-bold text-slate-200 flex items-center gap-2">📈 Live Chart XAU/USD</h2>
+                        <span class="text-[10px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">TradingView Pro</span>
+                    </div>
+                    <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-700/80">
+                        <div id="tradingview_gold" class="w-full h-full"></div>
+                    </div>
                 </div>
-                <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-100">
-                    <div id="tradingview_gold" class="w-full h-full"></div>
+
+                <!-- Risk Calculator & Equity Chart (1 Col) -->
+                <div class="flex flex-col gap-5 h-[520px]">
+                    <!-- Calculator -->
+                    <div class="bg-slate-800/60 p-4.5 rounded-2xl border border-slate-700/60 shadow-xl flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <h2 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">🧮 Risk & Lot Calculator</h2>
+                                <div class="flex items-center bg-slate-900/80 p-1 rounded-lg border border-slate-700">
+                                    <button id="btn-acc-std" type="button" class="px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-slate-950 shadow-sm transition">Standard</button>
+                                    <button id="btn-acc-cent" type="button" class="px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-400 hover:text-slate-200 transition">Cent</button>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-400 mb-1" id="lbl-balance">Balance / Modal ($)</label>
+                                    <input type="number" id="calc-balance" value="1000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-100 focus:border-amber-500 focus:outline-none transition">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Resiko (%)</label>
+                                        <input type="number" id="calc-risk" value="1" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-100 focus:border-amber-500 focus:outline-none transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-400 mb-1">SL (Pips)</label>
+                                        <input type="number" id="calc-sl-pips" value="30" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-100 focus:border-amber-500 focus:outline-none transition">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300 font-medium">Uang Beresiko:</span>
+                                <span id="res-risk-usd" class="font-bold text-rose-400">$10.00</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-300 font-medium">Rekomendasi Lot:</span>
+                                <span id="res-lot" class="font-bold text-amber-400">0.03 Lot</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equity Chart -->
+                    <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/60 shadow-xl h-[210px] flex flex-col">
+                        <h2 class="text-xs font-bold text-slate-400 mb-2">📊 Kurva Performa Equity ($)</h2>
+                        <div class="flex-1 w-full relative">
+                            <canvas id="equityChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Risk Calculator & Equity Chart (1 Col) -->
-            <div class="flex flex-col gap-5 h-[520px]">
-                <!-- Calculator -->
-                <div class="bg-white p-4.5 rounded-2xl shadow-sm border border-slate-200/80 flex-1 flex flex-col justify-between">
+            <!-- Kalender Profit / Loss Bulanan -->
+            <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/60 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-2 border-b border-slate-700/50">
                     <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="text-sm font-bold text-amber-600 flex items-center gap-1.5">🧮 Risk & Lot Calculator</h2>
-                            <!-- Toggle Cent/Std -->
-                            <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200/70">
-                                <button id="btn-acc-std" type="button" class="px-2.5 py-1 text-[10px] font-bold rounded-md bg-amber-500 text-white shadow-sm transition">Standard</button>
-                                <button id="btn-acc-cent" type="button" class="px-2.5 py-1 text-[10px] font-bold rounded-md text-slate-500 hover:text-slate-700 transition">Cent</button>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-500 mb-1" id="lbl-balance">Balance / Modal ($)</label>
-                                <input type="number" id="calc-balance" value="1000" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:bg-white transition">
-                            </div>
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Resiko (%)</label>
-                                    <input type="number" id="calc-risk" value="1" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:bg-white transition">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-500 mb-1">SL (Pips)</label>
-                                    <input type="number" id="calc-sl-pips" value="30" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:bg-white transition">
-                                </div>
-                            </div>
-                        </div>
+                        <h2 class="text-sm font-bold text-slate-200">🗓️ Kalender Performa Trading</h2>
+                        <p class="text-xs text-slate-400">Ringkasan hasil profit/loss harian dalam tampilan kalender</p>
                     </div>
-
-                    <div class="mt-3 p-3 bg-amber-50/70 rounded-xl border border-amber-200/60 space-y-1.5">
-                        <div class="flex justify-between text-xs">
-                            <span class="text-slate-600 font-medium">Uang Beresiko:</span>
-                            <span id="res-risk-usd" class="font-bold text-rose-600">$10.00</span>
-                        </div>
-                        <div class="flex justify-between text-xs">
-                            <span class="text-slate-600 font-medium">Rekomendasi Lot:</span>
-                            <span id="res-lot" class="font-bold text-amber-700">0.03 Lot</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Equity Chart -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 h-[210px] flex flex-col">
-                    <h2 class="text-xs font-bold text-slate-500 mb-2">📊 Kurva Performa Equity ($)</h2>
-                    <div class="flex-1 w-full relative">
-                        <canvas id="equityChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEW SECTION 1: Analisis Waktu, Hari & Performa Setup -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Analisis Hari Terbaik -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[280px]">
-                <h3 class="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
-                    <span>📅 Win Rate per Hari</span>
-                    <span class="text-[10px] font-normal text-slate-400">Senin - Jumat</span>
-                </h3>
-                <div class="flex-1 relative w-full">
-                    <canvas id="dayChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Analisis Sesi Terbaik -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[280px]">
-                <h3 class="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
-                    <span>🕒 Profit/Loss per Sesi</span>
-                    <span class="text-[10px] font-normal text-slate-400">Asia / London / NY</span>
-                </h3>
-                <div class="flex-1 relative w-full">
-                    <canvas id="sessionChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Rasio Win/Loss & Setup -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[280px]">
-                <h3 class="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
-                    <span>🎯 Distribusi Result</span>
-                    <span class="text-[10px] font-normal text-slate-400">Win vs Loss</span>
-                </h3>
-                <div class="flex-1 relative w-full flex items-center justify-center">
-                    <canvas id="winLossChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEW SECTION 2: Kalender Profit / Loss Bulanan -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-2 border-b border-slate-100">
-                <div>
-                    <h2 class="text-base font-bold text-slate-800">🗓️ Kalender Performa Trading</h2>
-                    <p class="text-xs text-slate-400">Ringkasan hasil profit/loss harian dalam tampilan kalender</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button id="btn-prev-month" class="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold transition">◀</button>
-                    <span id="calendar-month-label" class="text-xs font-bold text-slate-700 min-w-[110px] text-center">September 2026</span>
-                    <button id="btn-next-month" class="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold transition">▶</button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                <div>Ming</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
-            </div>
-            <div id="calendar-grid" class="grid grid-cols-7 gap-1.5">
-                <!-- Days generated dynamically -->
-            </div>
-        </div>
-
-        <!-- Bottom Section: Journal (Left) & Economic Calendar (Right) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            
-            <!-- Trading Journal (2 Cols) -->
-            <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col min-h-[520px]">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-100">
-                    <h2 class="text-base font-bold text-slate-800">📖 Jurnal Trading Gold</h2>
-                    
                     <div class="flex items-center gap-2">
-                        <button id="btn-export-csv" class="bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition">
-                            📥 CSV
-                        </button>
-                        <label class="bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition cursor-pointer">
-                            📤 Import
-                            <input type="file" id="file-import" accept=".json" class="hidden">
-                        </label>
-                        <button id="btn-export-json" class="bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition">
-                            💾 Backup
-                        </button>
+                        <button id="btn-prev-month" class="p-1.5 bg-slate-900 hover:bg-slate-700 rounded-lg text-xs font-bold transition text-slate-300">◀</button>
+                        <span id="calendar-month-label" class="text-xs font-bold text-amber-400 min-w-[110px] text-center">September 2026</span>
+                        <button id="btn-next-month" class="p-1.5 bg-slate-900 hover:bg-slate-700 rounded-lg text-xs font-bold transition text-slate-300">▶</button>
                     </div>
                 </div>
-                
-                <!-- Form Input Trade -->
-                <form id="trade-form" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200/70">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Tanggal</label>
-                        <input type="date" id="trade-date" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Sesi</label>
-                        <select id="trade-session" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                            <option value="Asia">Asia</option>
-                            <option value="London">London</option>
-                            <option value="New York">New York</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Posisi</label>
-                        <select id="trade-type" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                            <option value="BUY">BUY</option>
-                            <option value="SELL">SELL</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Setup</label>
-                        <select id="trade-setup" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                            <option value="SND Breakout">SND Breakout</option>
-                            <option value="SNR Rejection">SNR Rejection</option>
-                            <option value="Trend Continuation">Trend Continuation</option>
-                            <option value="News Scalping">News Scalping</option>
-                            <option value="Lainnya">Lainnya</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Entry</label>
-                        <input type="number" step="0.01" id="trade-entry" placeholder="2030.50" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Exit</label>
-                        <input type="number" step="0.01" id="trade-exit" placeholder="2035.00" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Lot</label>
-                        <input type="number" step="0.01" id="trade-lot" placeholder="0.10" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Profit/Loss ($)</label>
-                        <input type="number" step="0.01" id="trade-pnl" placeholder="45.00" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
-                    </div>
-                    <div class="col-span-2 md:col-span-4 flex items-end">
-                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold p-2.5 rounded-lg text-xs transition shadow-sm">
-                            + Simpan Trade ke Jurnal
-                        </button>
-                    </div>
-                </form>
 
-                <!-- Table Journal -->
-                <div class="overflow-x-auto flex-1 max-h-[300px] rounded-xl border border-slate-100">
-                    <table class="w-full text-left text-xs text-slate-700">
-                        <thead class="bg-slate-50 text-slate-400 uppercase sticky top-0 border-b border-slate-200 text-[10px] font-bold tracking-wider">
-                            <tr>
-                                <th class="p-3">Tanggal</th>
-                                <th class="p-3">Sesi</th>
-                                <th class="p-3">Tipe</th>
-                                <th class="p-3">Setup</th>
-                                <th class="p-3">Entry</th>
-                                <th class="p-3">Exit</th>
-                                <th class="p-3">Lot</th>
-                                <th class="p-3">P/L ($)</th>
-                                <th class="p-3 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="journal-table-body" class="divide-y divide-slate-100">
-                            <!-- Data JS -->
-                        </tbody>
-                    </table>
+                <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <div>Ming</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1.5">
+                    <!-- Dynamic Days -->
                 </div>
             </div>
 
-            <!-- Economic Calendar Widget -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[520px]">
-                <h2 class="text-sm font-bold text-slate-700 mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">📅 Kalender Berita USD</h2>
-                <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-100 relative bg-slate-50">
+            <!-- Journal Table & News Calendar -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <!-- Trading Journal (2 Cols) -->
+                <div class="lg:col-span-2 bg-slate-800/60 p-5 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col min-h-[520px]">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-700/50">
+                        <h2 class="text-sm font-bold text-slate-200">📖 Jurnal Trading Gold</h2>
+                        
+                        <div class="flex items-center gap-2">
+                            <button id="btn-export-csv" class="bg-slate-900 hover:bg-slate-700 text-xs text-slate-300 font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                                📥 CSV
+                            </button>
+                            <label class="bg-slate-900 hover:bg-slate-700 text-xs text-slate-300 font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition cursor-pointer">
+                                📤 Import
+                                <input type="file" id="file-import" accept=".json" class="hidden">
+                            </label>
+                            <button id="btn-export-json" class="bg-slate-900 hover:bg-slate-700 text-xs text-slate-300 font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                                💾 Backup
+                            </button>
+                        </div>
+                    </div>
                     
-                    <!-- TradingView Widget BEGIN -->
-                    <div class="tradingview-widget-container h-full w-full">
-                      <div class="tradingview-widget-container__widget h-full w-full"></div>
-                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                      {
-                        "colorTheme": "light",
-                        "isTransparent": false,
-                        "width": "100%",
-                        "height": "100%",
-                        "locale": "id",
-                        "importanceFilter": "-1,0,1",
-                        "currencyFilter": "USD"
-                      }
-                      </script>
-                    </div>
-                    <!-- TradingView Widget END -->
+                    <!-- Form Input Trade -->
+                    <form id="trade-form" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4 bg-slate-900/80 p-3 rounded-xl border border-slate-700/80">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Tanggal</label>
+                            <input type="date" id="trade-date" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Sesi</label>
+                            <select id="trade-session" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                                <option value="Asia">Asia</option>
+                                <option value="London">London</option>
+                                <option value="New York">New York</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Posisi</label>
+                            <select id="trade-type" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                                <option value="BUY">BUY</option>
+                                <option value="SELL">SELL</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Setup</label>
+                            <select id="trade-setup" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                                <option value="SND Breakout">SND Breakout</option>
+                                <option value="SNR Rejection">SNR Rejection</option>
+                                <option value="Trend Continuation">Trend Continuation</option>
+                                <option value="News Scalping">News Scalping</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Entry</label>
+                            <input type="number" step="0.01" id="trade-entry" placeholder="2030.50" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Exit</label>
+                            <input type="number" step="0.01" id="trade-exit" placeholder="2035.00" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Lot</label>
+                            <input type="number" step="0.01" id="trade-lot" placeholder="0.10" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1">Profit/Loss ($)</label>
+                            <input type="number" step="0.01" id="trade-pnl" placeholder="45.00" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 font-medium focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div class="col-span-2 md:col-span-4 flex items-end">
+                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black p-2.5 rounded-lg text-xs transition shadow-lg shadow-amber-500/20">
+                                + SIMPAN TRADE KE JURNAL
+                            </button>
+                        </div>
+                    </form>
 
+                    <!-- Table Journal -->
+                    <div class="overflow-x-auto flex-1 max-h-[300px] rounded-xl border border-slate-700/80">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase sticky top-0 border-b border-slate-700 text-[10px] font-bold tracking-wider">
+                                <tr>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Sesi</th>
+                                    <th class="p-3">Tipe</th>
+                                    <th class="p-3">Setup</th>
+                                    <th class="p-3">Entry</th>
+                                    <th class="p-3">Exit</th>
+                                    <th class="p-3">Lot</th>
+                                    <th class="p-3">P/L ($)</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="journal-table-body" class="divide-y divide-slate-800">
+                                <!-- JS Data -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Economic Calendar -->
+                <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col h-[520px]">
+                    <h2 class="text-xs font-bold text-slate-200 mb-3 pb-2 border-b border-slate-700/50 flex items-center gap-2">📅 Kalender Berita USD</h2>
+                    <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-700/80 relative bg-slate-900">
+                        <div class="tradingview-widget-container h-full w-full">
+                          <div class="tradingview-widget-container__widget h-full w-full"></div>
+                          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                          {
+                            "colorTheme": "dark",
+                            "isTransparent": true,
+                            "width": "100%",
+                            "height": "100%",
+                            "locale": "id",
+                            "importanceFilter": "-1,0,1",
+                            "currencyFilter": "USD"
+                          }
+                          </script>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
+        <!-- TAB 2: ANALYTICS & TIME -->
+        <div id="tab-content-analytics" class="tab-content hidden space-y-5 animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <!-- Analisis Hari Terbaik -->
+                <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col h-[320px]">
+                    <h3 class="text-xs font-bold text-slate-300 mb-3 flex items-center justify-between">
+                        <span>📅 Win Rate per Hari</span>
+                        <span class="text-[10px] text-amber-400">Senin - Jumat</span>
+                    </h3>
+                    <div class="flex-1 relative w-full">
+                        <canvas id="dayChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Analisis Sesi Terbaik -->
+                <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col h-[320px]">
+                    <h3 class="text-xs font-bold text-slate-300 mb-3 flex items-center justify-between">
+                        <span>🕒 Profit/Loss per Sesi</span>
+                        <span class="text-[10px] text-amber-400">Asia / London / NY</span>
+                    </h3>
+                    <div class="flex-1 relative w-full">
+                        <canvas id="sessionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Rasio Win/Loss -->
+                <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/60 shadow-xl flex flex-col h-[320px]">
+                    <h3 class="text-xs font-bold text-slate-300 mb-3 flex items-center justify-between">
+                        <span>🎯 Distribusi Result</span>
+                        <span class="text-[10px] text-amber-400">Win vs Loss Ratio</span>
+                    </h3>
+                    <div class="flex-1 relative w-full flex items-center justify-center">
+                        <canvas id="winLossChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: TERMINAL CONSOLE -->
+        <div id="tab-content-terminal" class="tab-content hidden space-y-5 animate-fade-in">
+            <div class="bg-black/90 p-5 rounded-2xl border border-emerald-500/30 shadow-2xl shadow-emerald-500/10 font-mono text-emerald-400 min-h-[600px] flex flex-col justify-between relative overflow-hidden">
+                <!-- Terminal Glow Decorative Line -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50"></div>
+
+                <div>
+                    <!-- Terminal Bar Header -->
+                    <div class="flex justify-between items-center pb-3 border-b border-emerald-500/20 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="h-3 w-3 rounded-full bg-rose-500 inline-block"></span>
+                            <span class="h-3 w-3 rounded-full bg-amber-500 inline-block"></span>
+                            <span class="h-3 w-3 rounded-full bg-emerald-500 inline-block"></span>
+                            <span class="ml-2 text-slate-400 font-bold">GOLD_TERMINAL_STREAM_CLI_v5.0</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-[11px] text-slate-400">
+                            <span>STATUS: <strong class="text-emerald-400 animate-pulse">ONLINE</strong></span>
+                            <span>LATENCY: <strong class="text-emerald-400">12ms</strong></span>
+                            <button id="btn-clear-console" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded border border-emerald-500/30 transition text-[10px]">CLEAR LOGS</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Log Screen Stream -->
+                    <div id="console-stream" class="mt-4 space-y-2 text-xs md:text-sm max-h-[460px] overflow-y-auto pr-2">
+                        <!-- Dynamic Console Logs -->
+                    </div>
+                </div>
+
+                <!-- Command Line Input (Command Palette Feature) -->
+                <div class="mt-4 pt-3 border-t border-emerald-500/20 flex items-center gap-2">
+                    <span class="text-amber-400 font-bold">$</span>
+                    <input type="text" id="console-input" placeholder="Ketik perintah (contoh: /help, /clear, /risk 1000 1 30)..." class="w-full bg-transparent border-none text-emerald-300 focus:outline-none font-mono text-xs md:text-sm">
+                </div>
+            </div>
         </div>
 
     </div>
