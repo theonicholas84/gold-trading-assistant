@@ -33,10 +33,11 @@ input:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
 }
 
-/* TradingView Container Fix */
-.tradingview-widget-container, 
-.tradingview-widget-container__widget, 
+/* Force TradingView Iframe Fit */
+.tradingview-widget-container,
+.tradingview-widget-container__widget,
 .tradingview-widget-container iframe {
     width: 100% !important;
     height: 100% !important;
+    border: none !important;
 }
