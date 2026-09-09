@@ -1,73 +1,296 @@
-/* Import Monospace & Modern Font */
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+/* --- Custom Variables (Light Theme Palette) --- */
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --primary: #4f46e5;
+  --primary-light: #e0e7ff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-.font-mono {
-    font-family: 'Fira Code', monospace;
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
 }
 
-/* Custom Scrollbar Dark Retro */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+/* --- Sidebar Style --- */
+.sidebar {
+  width: 260px;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-::-webkit-scrollbar-track {
-    background: #0f172a;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+  padding-left: 8px;
 }
 
-::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+.brand h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-/* Tab Navigation Active State */
-.tab-btn.active-tab {
-    background-color: #f59e0b;
-    color: #0f172a;
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* Smooth Fade In Animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-.animate-fade-in {
-    animation: fadeIn 0.25s ease-out forwards;
+.nav-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--primary);
+  transform: translateX(4px);
 }
 
-/* Calendar Styling Dark Mode */
-.cal-day {
-    min-height: 52px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 5px;
-    border-radius: 8px;
-    border: 1px solid rgba(51, 65, 85, 0.5);
-    font-size: 10px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.nav-btn.active {
+  background-color: var(--primary-light);
+  color: var(--primary);
 }
 
-.cal-day.has-data:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+/* --- Main Content Area --- */
+.main-content {
+  flex: 1;
+  padding: 40px;
+  max-width: 1200px;
 }
 
-/* Force TradingView Iframe Fit */
-.tradingview-widget-container,
-.tradingview-widget-container__widget,
-.tradingview-widget-container iframe {
-    width: 100% !important;
-    height: 100% !important;
-    border: none !important;
+.section-header {
+  margin-bottom: 32px;
+}
+
+.section-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Animasi Tab Content */
+.tab-content {
+  display: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: var(--transition);
+}
+
+.tab-content.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Cards Grid (Analytics) --- */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.stat-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.live {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.badge.trend-up {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badge.status-ok {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+/* --- Terminal Console (Modern Light Style) --- */
+.console-wrapper {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  font-family: 'Fira Code', monospace;
+}
+
+.console-header {
+  background-color: #f1f5f9;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot.red { background-color: #ef4444; }
+.dot.yellow { background-color: #f59e0b; }
+.dot.green { background-color: #10b981; }
+
+.console-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.console-output {
+  height: 320px;
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.console-output p {
+  line-height: 1.6;
+}
+
+.sys-msg {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.console-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background-color: #fafafa;
+}
+
+.prompt {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.console-input-row input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  outline: none;
 }
