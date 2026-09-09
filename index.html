@@ -12,7 +12,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans p-4 md:p-6 min-h-screen">
 
-    <div class="max-w-7xl mx-auto space-y-5">
+    <div class="max-w-7xl mx-auto space-y-6">
         
         <!-- Header & Top Stats -->
         <header class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -20,7 +20,7 @@
                 <h1 class="text-2xl font-bold text-amber-600 flex items-center gap-2">
                     ⚡ Gold Trading Assistant
                 </h1>
-                <p class="text-xs text-slate-500 font-medium mt-0.5">Live Chart, Risk Calculator, Economic Calendar & Journal</p>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">Live Chart, Risk Calculator, Analytics & Interactive Journal</p>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full md:w-auto bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/60 text-center">
@@ -111,6 +111,64 @@
             </div>
         </div>
 
+        <!-- NEW SECTION 1: Analisis Waktu, Hari & Performa Setup -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Analisis Hari Terbaik -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[280px]">
+                <h3 class="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
+                    <span>📅 Win Rate per Hari</span>
+                    <span class="text-[10px] font-normal text-slate-400">Senin - Jumat</span>
+                </h3>
+                <div class="flex-1 relative w-full">
+                    <canvas id="dayChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Analisis Sesi Terbaik -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[280px]">
+                <h3 class="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
+                    <span>🕒 Profit/Loss per Sesi</span>
+                    <span class="text-[10px] font-normal text-slate-400">Asia / London / NY</span>
+                </h3>
+                <div class="flex-1 relative w-full">
+                    <canvas id="sessionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Rasio Win/Loss & Setup -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[280px]">
+                <h3 class="text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
+                    <span>🎯 Distribusi Result</span>
+                    <span class="text-[10px] font-normal text-slate-400">Win vs Loss</span>
+                </h3>
+                <div class="flex-1 relative w-full flex items-center justify-center">
+                    <canvas id="winLossChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW SECTION 2: Kalender Profit / Loss Bulanan -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-2 border-b border-slate-100">
+                <div>
+                    <h2 class="text-base font-bold text-slate-800">🗓️ Kalender Performa Trading</h2>
+                    <p class="text-xs text-slate-400">Ringkasan hasil profit/loss harian dalam tampilan kalender</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btn-prev-month" class="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold transition">◀</button>
+                    <span id="calendar-month-label" class="text-xs font-bold text-slate-700 min-w-[110px] text-center">September 2026</span>
+                    <button id="btn-next-month" class="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold transition">▶</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                <div>Ming</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+            </div>
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1.5">
+                <!-- Days generated dynamically -->
+            </div>
+        </div>
+
         <!-- Bottom Section: Journal (Left) & Economic Calendar (Right) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             
@@ -138,6 +196,14 @@
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 mb-1">Tanggal</label>
                         <input type="date" id="trade-date" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">Sesi</label>
+                        <select id="trade-session" class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
+                            <option value="Asia">Asia</option>
+                            <option value="London">London</option>
+                            <option value="New York">New York</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 mb-1">Posisi</label>
@@ -172,9 +238,9 @@
                         <label class="block text-[11px] font-bold text-slate-500 mb-1">Profit/Loss ($)</label>
                         <input type="number" step="0.01" id="trade-pnl" placeholder="45.00" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800 font-medium">
                     </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold p-2 rounded-lg text-xs transition shadow-sm">
-                            + Simpan Trade
+                    <div class="col-span-2 md:col-span-4 flex items-end">
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold p-2.5 rounded-lg text-xs transition shadow-sm">
+                            + Simpan Trade ke Jurnal
                         </button>
                     </div>
                 </form>
@@ -185,6 +251,7 @@
                         <thead class="bg-slate-50 text-slate-400 uppercase sticky top-0 border-b border-slate-200 text-[10px] font-bold tracking-wider">
                             <tr>
                                 <th class="p-3">Tanggal</th>
+                                <th class="p-3">Sesi</th>
                                 <th class="p-3">Tipe</th>
                                 <th class="p-3">Setup</th>
                                 <th class="p-3">Entry</th>
