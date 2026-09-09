@@ -1,9 +1,4 @@
-/* Custom Scrollbar & Base Polish */
-body {
-    background-color: #0f172a;
-    color: #f8fafc;
-}
-
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -22,7 +17,30 @@ body {
     background: #475569;
 }
 
-/* Custom Table Row Styling */
-tr.hover-row:hover {
+/* Base Body Styling */
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+/* Custom Table Row Hover Effect */
+#journal-table-body tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+#journal-table-body tr:hover {
     background-color: rgba(30, 41, 59, 0.7);
+}
+
+/* Input Focus Glow Effect */
+input:focus, select:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 1px #f59e0b;
+}
+
+/* Smoothing Widget Container */
+.tradingview-widget-container {
+    border-radius: 0.5rem;
+    overflow: hidden;
 }
