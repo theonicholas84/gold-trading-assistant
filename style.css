@@ -1,4 +1,4 @@
-/* Light Custom Scrollbar */
+/* Smooth Soft Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -10,7 +10,7 @@
 
 ::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -26,9 +26,17 @@
     background-color: #f8fafc;
 }
 
-/* Form Input Focus State */
+/* Form Input Focus State - Warm Amber Glow */
 input:focus, select:focus {
     outline: none !important;
     border-color: #f59e0b !important;
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* TradingView Container Fix */
+.tradingview-widget-container, 
+.tradingview-widget-container__widget, 
+.tradingview-widget-container iframe {
+    width: 100% !important;
+    height: 100% !important;
 }
