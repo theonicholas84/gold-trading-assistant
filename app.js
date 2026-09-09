@@ -1,11 +1,11 @@
-// 1. Live TradingView Chart
+// 1. Live TradingView Chart (Light Theme)
 new TradingView.widget({
     "width": "100%",
     "height": "100%",
     "symbol": "OANDA:XAUUSD",
     "interval": "60",
     "timezone": "Asia/Jakarta",
-    "theme": "dark",
+    "theme": "light",
     "style": "1",
     "locale": "id",
     "toolbar_bg": "#f1f3f6",
@@ -14,12 +14,12 @@ new TradingView.widget({
     "container_id": "tradingview_gold"
 });
 
-// 2. Init Economic Calendar Widget (USD focus)
+// 2. Init Economic Calendar Widget (Light Theme)
 const eventsWidgetContainer = document.getElementById('tradingview_events');
 if (eventsWidgetContainer) {
     eventsWidgetContainer.innerHTML = JSON.stringify({
-        "colorTheme": "dark",
-        "isTransparent": true,
+        "colorTheme": "light",
+        "isTransparent": false,
         "width": "100%",
         "height": "100%",
         "locale": "id",
@@ -55,21 +55,21 @@ document.getElementById('trade-date').valueAsDate = new Date();
 // Toggle Akun Standard / Cent
 btnAccStd.addEventListener('click', () => {
     isCentAccount = false;
-    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-slate-900";
-    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded text-slate-400";
+    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-white shadow-sm";
+    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded text-gray-500";
     lblBalance.textContent = "Balance / Modal ($)";
     calculateRisk();
 });
 
 btnAccCent.addEventListener('click', () => {
     isCentAccount = true;
-    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-slate-900";
-    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded text-slate-400";
+    btnAccCent.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-white shadow-sm";
+    btnAccStd.className = "px-2 py-0.5 text-[10px] font-bold rounded text-gray-500";
     lblBalance.textContent = "Balance / Modal (Cent)";
     calculateRisk();
 });
 
-// Kalkulator Risk
+// Risk Calculator Logic
 function calculateRisk() {
     const balance = parseFloat(calcBalance.value) || 0;
     const riskPercent = parseFloat(calcRisk.value) || 0;
@@ -79,7 +79,6 @@ function calculateRisk() {
     let lotSize = 0;
     
     if (slPips > 0) {
-        // Pada akun Cent, 1 lot cent nilainya 1/100 dari standard lot
         const multiplier = isCentAccount ? 0.1 : 10;
         lotSize = riskAmount / (slPips * multiplier);
     }
@@ -94,7 +93,7 @@ function calculateRisk() {
 });
 calculateRisk();
 
-// Chart Equity Growth
+// Equity Curve Graph (Light Styling)
 function initChart() {
     const ctx = document.getElementById('equityChart').getContext('2d');
     equityChart = new Chart(ctx, {
@@ -104,8 +103,8 @@ function initChart() {
             datasets: [{
                 label: 'Equity ($)',
                 data: [],
-                borderColor: '#f59e0b',
-                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderColor: '#d97706',
+                backgroundColor: 'rgba(217, 119, 6, 0.08)',
                 borderWidth: 2,
                 fill: true,
                 tension: 0.3,
@@ -119,8 +118,8 @@ function initChart() {
             scales: {
                 x: { display: false },
                 y: {
-                    grid: { color: '#334155' },
-                    ticks: { color: '#94a3b8', font: { size: 10 } }
+                    grid: { color: '#f1f5f9' },
+                    ticks: { color: '#64748b', font: { size: 10 } }
                 }
             }
         }
@@ -145,7 +144,7 @@ function updateChart() {
     equityChart.update();
 }
 
-// Render Jurnal & Statistik Lanjutan
+// Render Table & Stats
 function renderJournal() {
     journalTableBody.innerHTML = '';
     let winCount = 0;
@@ -165,29 +164,28 @@ function renderJournal() {
         }
 
         const row = document.createElement('tr');
-        row.className = "hover:bg-slate-750 border-b border-slate-700/40";
+        row.className = "border-b border-gray-100 hover:bg-gray-50";
         
-        const pnlClass = pnlNum >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold';
+        const pnlClass = pnlNum >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
         const typeClass = trade.type === 'BUY' 
-            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-            : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+            : 'bg-rose-50 text-rose-700 border-rose-200';
 
         row.innerHTML = `
-            <td class="p-3">${trade.date}</td>
-            <td class="p-3"><span class="px-2 py-0.5 border rounded text-[10px] ${typeClass}">${trade.type}</span></td>
-            <td class="p-3 text-slate-400">${trade.setup || '-'}</td>
-            <td class="p-3">$${parseFloat(trade.entry).toFixed(2)}</td>
-            <td class="p-3">$${parseFloat(trade.exit).toFixed(2)}</td>
-            <td class="p-3">${trade.lot}</td>
-            <td class="p-3 ${pnlClass}">${pnlNum >= 0 ? '+' : ''}$${pnlNum.toFixed(2)}</td>
-            <td class="p-3 text-center">
-                <button onclick="deleteTrade(${index})" class="text-rose-400 hover:text-rose-300 font-medium">Hapus</button>
+            <td class="p-2.5">${trade.date}</td>
+            <td class="p-2.5"><span class="px-2 py-0.5 border rounded text-[10px] font-bold ${typeClass}">${trade.type}</span></td>
+            <td class="p-2.5 text-gray-500">${trade.setup || '-'}</td>
+            <td class="p-2.5">$${parseFloat(trade.entry).toFixed(2)}</td>
+            <td class="p-2.5">$${parseFloat(trade.exit).toFixed(2)}</td>
+            <td class="p-2.5">${trade.lot}</td>
+            <td class="p-2.5 ${pnlClass}">${pnlNum >= 0 ? '+' : ''}$${pnlNum.toFixed(2)}</td>
+            <td class="p-2.5 text-center">
+                <button onclick="deleteTrade(${index})" class="text-rose-500 hover:text-rose-700 font-semibold">Hapus</button>
             </td>
         `;
         journalTableBody.appendChild(row);
     });
 
-    // Statistik Calculations
     const totalTrades = trades.length;
     const winRate = totalTrades > 0 ? ((winCount / totalTrades) * 100).toFixed(1) : 0;
     const profitFactor = grossLoss > 0 ? (grossWin / grossLoss).toFixed(2) : (grossWin > 0 ? "INF" : "0.00");
@@ -196,13 +194,13 @@ function renderJournal() {
     totalTradesVal.textContent = totalTrades;
     profitFactorVal.textContent = profitFactor;
     totalPnlVal.textContent = `${netPnl >= 0 ? '+' : ''}$${netPnl.toFixed(2)}`;
-    totalPnlVal.className = `text-lg font-bold ${netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+    totalPnlVal.className = `text-lg font-bold ${netPnl >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
 
     localStorage.setItem('gold_trades_v3', JSON.stringify(trades));
     updateChart();
 }
 
-// Event Submit Trade Form
+// Form Submit
 tradeForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -231,7 +229,7 @@ function deleteTrade(index) {
     }
 }
 
-// Backup & Import
+// Backup CSV/JSON
 document.getElementById('btn-export-csv').addEventListener('click', () => {
     if (trades.length === 0) return alert('Belum ada data.');
     let csvContent = "data:text/csv;charset=utf-8,Tanggal,Posisi,Setup,Entry,Exit,Lot,PnL\n";
@@ -266,7 +264,7 @@ document.getElementById('file-import').addEventListener('change', (e) => {
             if (Array.isArray(importedTrades)) {
                 trades = importedTrades;
                 renderJournal();
-                alert('Data jurnal berhasil diperbarui!');
+                alert('Data jurnal berhasil diimpor!');
             }
         } catch (err) {
             alert('File JSON tidak valid.');
@@ -277,6 +275,5 @@ document.getElementById('file-import').addEventListener('change', (e) => {
     }
 });
 
-// App Startup
 initChart();
 renderJournal();
