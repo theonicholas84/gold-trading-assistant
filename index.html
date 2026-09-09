@@ -1,474 +1,183 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gold Trading Assistant • XAU/USD</title>
-  <!-- Google Fonts & Lucide Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asisten Trading Gold (XAU/USD)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN untuk Equity Curve -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="app-container">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">
-          <i data-lucide="coins"></i>
-        </div>
-        <div class="brand-text">
-          <span class="title">GOLD TA</span>
-          <span class="subtitle">XAU/USD Terminal</span>
-        </div>
-      </div>
+<body class="p-4 md:p-8 font-sans">
 
-      <nav class="nav-menu">
-        <button class="nav active" data-page="dashboard">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
-        </button>
-        <button class="nav" data-page="calculator">
-          <i data-lucide="calculator"></i>
-          <span>Calculator</span>
-        </button>
-        <button class="nav" data-page="journal">
-          <i data-lucide="book-open"></i>
-          <span>Journal</span>
-        </button>
-        <button class="nav" data-page="performance">
-          <i data-lucide="bar-chart-3"></i>
-          <span>Performance</span>
-        </button>
-        <button class="nav" data-page="dictionary">
-          <i data-lucide="book-marked"></i>
-          <span>Dictionary</span>
-        </button>
-        <button class="nav" data-page="news">
-          <i data-lucide="newspaper"></i>
-          <span>News Warning</span>
-        </button>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="status-indicator">
-          <span class="dot"></span> Local Storage Active
-        </div>
-        <div class="version">Version 1.0 Pro</div>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Topbar Header -->
-      <header class="topbar">
-        <div class="page-header">
-          <div class="eyebrow"><i data-lucide="shield-check"></i> PERSONAL TRADING SYSTEM</div>
-          <h1 id="pageTitle">Dashboard</h1>
-        </div>
-        <div class="topbar-actions">
-          <button class="btn-ghost" id="resetData">
-            <i data-lucide="rotate-ccw"></i>
-            <span>Reset Data</span>
-          </button>
-        </div>
-      </header>
-
-      <!-- Page 1: Dashboard -->
-      <section id="dashboard" class="page active-page">
-        <div class="hero-card">
-          <div class="hero-info" style="width: 100%; max-width: 480px;">
-            <span class="tag">XAU/USD LIVE PRICE</span>
-            
-            <!-- Live TradingView Single Quote Widget -->
-            <div class="tradingview-widget-container" style="margin: 12px 0;">
-              <div class="tradingview-widget-container__widget"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
-              {
-                "symbol": "OANDA:XAUUSD",
-                "width": "100%",
-                "colorTheme": "dark",
-                "isTransparent": true,
-                "locale": "id"
-              }
-              </script>
-            </div>
-
-            <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">
-              <i data-lucide="info" style="width:14px; height:14px; vertical-align: middle;"></i> Kelola risiko dan pantau pergerakan pasar sebelum mengambil keputusan entry.
-            </p>
-          </div>
-          <div class="hero-status">
-            <div class="badge badge-warning">
-              <i data-lucide="clock"></i> WAIT • Plan First
-            </div>
-          </div>
-        </div>
-
-        <!-- Dashboard Stats Grid -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <span>Total Trades</span>
-              <i data-lucide="history"></i>
-            </div>
-            <b id="dTrades">0</b>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <span>Win Rate</span>
-              <i data-lucide="percent"></i>
-            </div>
-            <b id="dWin">0%</b>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <span>Net P/L</span>
-              <i data-lucide="dollar-sign"></i>
-            </div>
-            <b id="dPnL">$0.00</b>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <span>Execution Loss</span>
-              <i data-lucide="alert-triangle"></i>
-            </div>
-            <b id="dExec">0</b>
-          </div>
-        </div>
-
-        <!-- Live Chart & Quick Assistant -->
-        <div class="grid-2">
-          <div class="card" style="padding: 18px;">
-            <div class="card-title">
-              <i data-lucide="candlestick-chart"></i>
-              <h2>Live XAU/USD Chart</h2>
-            </div>
-            <div class="tradingview-widget-container" style="height:400px; width:100%;">
-              <iframe
-                src="https://s.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=15&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Asia%2FJakarta"
-                style="width: 100%; height: 100%; border: 0; border-radius: 8px;">
-              </iframe>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">
-              <i data-lucide="zap"></i>
-              <h2>Quick Risk Assistant</h2>
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- Header & Top Stats -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-800 p-5 rounded-xl border border-slate-700 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+                    ⚡ Gold Trading Assistant
+                </h1>
+                <p class="text-xs text-slate-400">Trading Journal, Live Chart & Risk Management XAU/USD</p>
             </div>
             
-            <div class="form-group" style="margin-bottom: 20px;">
-              <label>Daily Market Bias</label>
-              <select id="dashBias">
-                <option value="bullish">🟢 Bullish (Focus Buy)</option>
-                <option value="bearish">🔴 Bearish (Focus Sell)</option>
-                <option value="range">🟡 Ranging / Sideways</option>
-              </select>
+            <div class="flex items-center gap-6 w-full md:w-auto justify-between border-t md:border-t-0 pt-3 md:pt-0 border-slate-700">
+                <div class="text-left md:text-right">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider block">Win Rate</span>
+                    <span id="winrate-val" class="text-xl font-bold text-emerald-400">0%</span>
+                </div>
+                <div class="text-left md:text-right">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider block">Total P/L</span>
+                    <span id="total-pnl-val" class="text-xl font-bold text-slate-200">$0.00</span>
+                </div>
+                <div class="text-left md:text-right">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider block">Total Trade</span>
+                    <span id="total-trades-val" class="text-xl font-bold text-amber-400">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Section: Live Chart & Risk Calculator -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Live Gold Chart (TradingView Widget) -->
+            <div class="lg:col-span-2 bg-slate-800 p-4 rounded-xl border border-slate-700 h-[520px]">
+                <h2 class="text-sm font-semibold mb-3 text-slate-300 flex items-center justify-between">
+                    <span>📈 Grafik Live XAU/USD</span>
+                    <span class="text-xs font-normal text-slate-400">Source: TradingView</span>
+                </h2>
+                <div class="tradingview-widget-container" style="height:calc(100% - 36px);width:100%">
+                    <div id="tradingview_gold" style="height:100%;width:100%"></div>
+                </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
-              <div style="display: flex; gap: 12px; align-items: flex-start;">
-                <span style="background: var(--accent-gold-glow); color: var(--accent-gold); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">1</span>
-                <div><b>Riset Market</b> — Pantau arah trend dan level SnR penting di chart sebelah kiri.</div>
-              </div>
-              <div style="display: flex; gap: 12px; align-items: flex-start;">
-                <span style="background: var(--accent-gold-glow); color: var(--accent-gold); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">2</span>
-                <div><b>Kalkulasi Lot</b> — Buka menu <i>Calculator</i> untuk memastikan ukuran risiko tidak meleset.</div>
-              </div>
-              <div style="display: flex; gap: 12px; align-items: flex-start;">
-                <span style="background: var(--accent-gold-glow); color: var(--accent-gold); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">3</span>
-                <div><b>Disiplin Jurnal</b> — Catat setiap hasil transaksi di menu <i>Journal</i> untuk evaluasi.</div>
-              </div>
-            </div>
+            <!-- Risk Management Calculator & Equity Chart -->
+            <div class="flex flex-col gap-6">
+                <!-- Calculator -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                    <h2 class="text-md font-semibold mb-3 text-amber-400">🧮 Kalkulator Lot & Risk</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Balance / Modal ($)</label>
+                            <input type="number" id="calc-balance" value="1000" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Resiko (%)</label>
+                                <input type="number" id="calc-risk" value="1" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">SL (Pips)</label>
+                                <input type="number" id="calc-sl-pips" value="30" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white focus:outline-none focus:border-amber-400">
+                            </div>
+                        </div>
+                    </div>
 
-            <div style="margin-top: 24px; padding: 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px; font-size: 12px; color: var(--text-muted); display: flex; gap: 10px;">
-              <i data-lucide="shield-alert" style="color: var(--accent-gold); flex-shrink: 0;"></i>
-              <div>
-                <b style="color: var(--accent-gold);">Aturan Emas Risk Management:</b>
-                <p style="margin-top: 2px;">Jangan pernah mempertaruhkan lebih dari <b>1% - 2% dari total modal</b> dalam satu kali transaksi.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                    <div class="mt-4 p-3 bg-slate-900 rounded-lg border border-slate-700/80 space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400">Uang Beresiko:</span>
+                            <span id="res-risk-usd" class="font-bold text-rose-400">$10.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400">Rekomendasi Lot:</span>
+                            <span id="res-lot" class="font-bold text-amber-400">0.03 Lot</span>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Page 2: Calculator -->
-      <section id="calculator" class="page">
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">
-              <i data-lucide="calculator"></i>
-              <h2>Risk & Lot Size Calculator</h2>
+                <!-- Equity Curve Graph -->
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex-1 flex flex-col min-h-[180px]">
+                    <h2 class="text-xs font-semibold mb-2 text-slate-400">📊 Kurva Pertumbuhan Kapital ($)</h2>
+                    <div class="flex-1 relative w-full h-full min-h-[130px]">
+                        <canvas id="equityChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Balance ($)</label>
-                <input id="balance" type="number" value="500" min="0">
-              </div>
-              <div class="form-group">
-                <label>Risk (%)</label>
-                <input id="riskPct" type="number" value="1" min="0" step="0.1">
-              </div>
-              <div class="form-group">
-                <label>Entry Price</label>
-                <input id="entry" type="number" value="2600" step="0.01">
-              </div>
-              <div class="form-group">
-                <label>Stop Loss (SL)</label>
-                <input id="sl" type="number" value="2590" step="0.01">
-              </div>
-              <div class="form-group">
-                <label>Take Profit (TP)</label>
-                <input id="tp" type="number" value="2620" step="0.01">
-              </div>
-              <div class="form-group">
-                <label>Contract Size (oz/lot)</label>
-                <input id="contract" type="number" value="100" min="0.01">
-              </div>
-              <div class="form-group">
-                <label>Lot Step</label>
-                <input id="lotStep" type="number" value="0.01" min="0.0001" step="0.01">
-              </div>
-              <div class="form-group">
-                <label>Account Type</label>
-                <select id="acctType">
-                  <option value="standard">Standard Account</option>
-                  <option value="cent">Cent Account</option>
-                </select>
-              </div>
-            </div>
-            <button class="btn-primary" id="calc" style="margin-top: 20px;">
-              <i data-lucide="cpu"></i> Calculate Position Size
-            </button>
-            <div id="calcResult" class="result-box"></div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">
-              <i data-lucide="coins"></i>
-              <h2>Cent Account Calculator</h2>
-            </div>
-            <p style="color: var(--text-muted); font-size: 13px;">Masukkan saldo modal USD sebenarnya. 1 USD diset setara dengan 100 unit Cent.</p>
-            <div class="form-group" style="margin-top: 18px;">
-              <label>Real Balance ($ USD)</label>
-              <input id="centBalance" type="number" value="10" min="0" step="0.01">
-            </div>
-            <div class="cent-display-box">
-              <span class="label">DISPLAY BALANCE</span>
-              <b id="centDisplay">1,000 cents</b>
-            </div>
-            <div style="font-size: 12px; color: var(--text-dim); display: flex; gap: 8px;">
-              <i data-lucide="info" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
-              <span>Spesifikasi akun cent (min lot, contract size) tergantung broker. Pastikan memeriksa syarat dan ketentuan broker Anda.</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Page 3: Journal -->
-      <section id="journal" class="page">
-        <div class="card">
-          <div class="card-title">
-            <i data-lucide="plus-circle"></i>
-            <h2>Add Trade Log</h2>
-          </div>
-          <div class="form-grid grid-3">
-            <div class="form-group">
-              <label>Date</label>
-              <input id="jDate" type="date">
-            </div>
-            <div class="form-group">
-              <label>Direction</label>
-              <select id="jDir">
-                <option value="BUY">BUY</option>
-                <option value="SELL">SELL</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Entry Price</label>
-              <input id="jEntry" type="number" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>Stop Loss (SL)</label>
-              <input id="jSL" type="number" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>Take Profit (TP)</label>
-              <input id="jTP" type="number" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>Exit Price</label>
-              <input id="jExit" type="number" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>Lot Size</label>
-              <input id="jLot" type="number" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>P/L ($)</label>
-              <input id="jPnL" type="number" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>Strategy</label>
-              <input id="jStrategy" placeholder="e.g. Break & Retest">
-            </div>
-            <div class="form-group">
-              <label>Session</label>
-              <select id="jSession">
-                <option>Asian</option>
-                <option>London</option>
-                <option>New York</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Emotion</label>
-              <select id="jEmotion">
-                <option>Calm</option>
-                <option>Confident</option>
-                <option>FOMO</option>
-                <option>Fear</option>
-                <option>Revenge</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Loss Type</label>
-              <select id="jLoss">
-                <option>None</option>
-                <option>Strategy Loss</option>
-                <option>Execution Loss</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group" style="margin-top: 18px;">
-            <label>Why did I enter?</label>
-            <textarea id="jReason" placeholder="Tuliskan poin pertimbangan entry..."></textarea>
-          </div>
-          <div class="form-group" style="margin-top: 14px;">
-            <label>What did I learn?</label>
-            <textarea id="jLesson" placeholder="Catatan evaluasi transaksi..."></textarea>
-          </div>
-          <button class="btn-primary" id="saveTrade" style="margin-top: 20px;">
-            <i data-lucide="save"></i> Save Trade Log
-          </button>
         </div>
 
-        <div class="card" style="margin-top: 24px;">
-          <div class="card-title">
-            <i data-lucide="list"></i>
-            <h2>Trade History</h2>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Dir</th>
-                  <th>Entry</th>
-                  <th>Exit</th>
-                  <th>P/L</th>
-                  <th>Strategy</th>
-                  <th>Loss Type</th>
-                  <th style="text-align: right;">Action</th>
-                </tr>
-              </thead>
-              <tbody id="tradeBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- Page 4: Performance -->
-      <section id="performance" class="page">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header"><span>Net P/L</span><i data-lucide="trending-up"></i></div>
-            <b id="pnl">$0.00</b>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header"><span>Win Rate</span><i data-lucide="pie-chart"></i></div>
-            <b id="winrate">0%</b>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header"><span>Profit Factor</span><i data-lucide="scale"></i></div>
-            <b id="pf">0</b>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header"><span>Avg Win</span><i data-lucide="award"></i></div>
-            <b id="avgwin">$0</b>
-          </div>
-        </div>
-
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-            <div class="card-title" style="margin-bottom: 0;">
-              <i data-lucide="calendar"></i>
-              <h2>Performance by Period</h2>
+        <!-- Trading Journal Section -->
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
+                <h2 class="text-lg font-semibold text-slate-200">📖 Jurnal Trading Gold</h2>
+                
+                <!-- Backup Tools -->
+                <div class="flex items-center gap-2">
+                    <button id="btn-export-csv" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded transition border border-slate-600">
+                        📥 Export CSV
+                    </button>
+                    <label class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded transition border border-slate-600 cursor-pointer">
+                        📤 Import Backup
+                        <input type="file" id="file-import" accept=".json" class="hidden">
+                    </label>
+                    <button id="btn-export-json" class="bg-slate-700 hover:bg-slate-600 text-xs text-slate-200 px-3 py-1.5 rounded transition border border-slate-600">
+                        💾 Backup JSON
+                    </button>
+                </div>
             </div>
-            <select id="periodFilter" style="width: auto; padding: 8px 14px;">
-              <option value="all">All Time</option>
-              <option value="day">Today</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-            </select>
-          </div>
-          <div id="periodSummary" class="result-box"></div>
+            
+            <!-- Input Form Trade -->
+            <form id="trade-form" class="grid grid-cols-2 md:grid-cols-7 gap-3 mb-6 bg-slate-900/60 p-4 rounded-lg border border-slate-700/50">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Tanggal</label>
+                    <input type="date" id="trade-date" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Posisi</label>
+                    <select id="trade-type" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Harga Entry</label>
+                    <input type="number" step="0.01" id="trade-entry" placeholder="2030.50" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Harga Exit</label>
+                    <input type="number" step="0.01" id="trade-exit" placeholder="2035.00" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Ukuran Lot</label>
+                    <input type="number" step="0.01" id="trade-lot" placeholder="0.10" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Profit/Loss ($)</label>
+                    <input type="number" step="0.01" id="trade-pnl" placeholder="45.00" required class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white">
+                </div>
+                <div class="col-span-2 md:col-span-1 flex items-end">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold p-2 rounded text-xs transition">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+
+            <!-- Table Journal -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-900 text-slate-400 uppercase border-b border-slate-700">
+                        <tr>
+                            <th class="p-3">Tanggal</th>
+                            <th class="p-3">Tipe</th>
+                            <th class="p-3">Entry</th>
+                            <th class="p-3">Exit</th>
+                            <th class="p-3">Lot</th>
+                            <th class="p-3">P/L ($)</th>
+                            <th class="p-3 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journal-table-body" class="divide-y divide-slate-700/60">
+                        <!-- Data trade akan dirender lewat JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">
-              <i data-lucide="pie-chart"></i>
-              <h2>Loss Breakdown</h2>
-            </div>
-            <div id="lossBreakdown"></div>
-          </div>
-          <div class="card">
-            <div class="card-title">
-              <i data-lucide="database"></i>
-              <h2>Trading Data Summary</h2>
-            </div>
-            <div id="tradingData"></div>
-          </div>
-        </div>
-      </section>
+    </div>
 
-      <!-- Page 5: Dictionary -->
-      <section id="dictionary" class="page">
-        <div class="card">
-          <div class="card-title">
-            <i data-lucide="search"></i>
-            <h2>Trading Glossary & Terms</h2>
-          </div>
-          <div class="search-box">
-            <i data-lucide="search"></i>
-            <input id="dictSearch" placeholder="Cari istilah: BOS, Spread, Leverage, Liquidity...">
-          </div>
-          <div id="dictList" class="dict-grid"></div>
-        </div>
-      </section>
-
-      <!-- Page 6: News -->
-      <section id="news" class="page">
-        <div class="card">
-          <div class="card-title">
-            <i data-lucide="bell"></i>
-            <h2>Economic Calendar & News Warnings</h2>
-          </div>
-          <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Peringatan volatilitas makroekonomi untuk instrumen XAU/USD.</p>
-          
-          <div class="news-list">
-            <div class="news-item">
-              <span style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 11px; width: max-content;">🔴 HIGH IMPACT</span>
-              <div>
-                <h3 style="font-size: 15px;">FOMC, CPI, NFP, Fed Interest Rate</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Volatilitas ekstrem. Disarankan menghindari open posisi baru 30 menit sebelum dan sesudah rilis berita.</p>
-              </div>
-            </div>
-            <div class="news-item">
-              <span style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 11px; width: max-content;">🟠 MEDIUM IMPACT</span>
-              <div>
-                <h3 style="font-size: 15px;">Fed Speeches, Retail Sales, Jobless Claims, PMI</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Dapat memicu spread me
+    <!-- TradingView Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
