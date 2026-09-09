@@ -1,90 +1,61 @@
-@charset "UTF-8";
-
-/**
- * Gold Trading Command Center Pro v5.0
- * Custom Stylesheet extensions
- */
-
-/* Custom Scrollbar Styles */
-.custom-scrollbar::-webkit-scrollbar {
+/* Smooth Soft Scrollbar */
+::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(51, 65, 85, 0.8);
-    border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #f59e0b;
-}
-
-/* Base Body Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
 ::-webkit-scrollbar-track {
-    background: #020617;
+    background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1e293b;
+    background: #cbd5e1;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #94a3b8;
 }
 
-/* Glassmorphism & Cyberpunk Neon Accents */
-.drop-shadow-amber {
-    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.3));
+/* Custom Table Row Hover */
+#journal-table-body tr {
+    transition: background-color 0.15s ease;
 }
 
-.drop-shadow-emerald {
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+#journal-table-body tr:hover {
+    background-color: #f8fafc;
 }
 
-.drop-shadow-rose {
-    filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.3));
-}
-
-/* Smooth Tab Animation */
-.tab-content {
-    animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(3px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Custom Table Row Hover Highlight */
-table tbody tr:hover {
-    background-color: rgba(30, 41, 59, 0.5) !important;
-}
-
-/* Input Chrome Styling overrides for Dark Mode */
-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.8);
-    cursor: pointer;
-}
-
-/* Focus Glows */
+/* Form Input Focus State - Warm Amber Glow */
 input:focus, select:focus {
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+    outline: none !important;
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Force TradingView Iframe Fit */
+.tradingview-widget-container,
+.tradingview-widget-container__widget,
+.tradingview-widget-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+}
+
+/* Calendar Cell Styling */
+.cal-day {
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+    font-size: 10px;
+    transition: all 0.15s ease;
+}
+
+.cal-day.has-data:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
