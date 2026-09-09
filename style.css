@@ -1,46 +1,34 @@
-/* Custom Scrollbar */
+/* Light Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #cbd5e1;
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #94a3b8;
 }
 
-/* Base Body Styling */
-body {
-    background-color: #0f172a;
-    color: #f8fafc;
-}
-
-/* Custom Table Row Hover Effect */
+/* Custom Table Row Hover */
 #journal-table-body tr {
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color 0.15s ease;
 }
 
 #journal-table-body tr:hover {
-    background-color: rgba(30, 41, 59, 0.7);
+    background-color: #f8fafc;
 }
 
-/* Input Focus Glow Effect */
+/* Form Input Focus State */
 input:focus, select:focus {
-    outline: none;
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 1px #f59e0b;
-}
-
-/* Smoothing Widget Container */
-.tradingview-widget-container {
-    border-radius: 0.5rem;
-    overflow: hidden;
+    outline: none !important;
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2) !important;
 }
